@@ -167,9 +167,41 @@ void single() {
   }
 }
 
+void test_sonar()
+{
+  double distance = 0;
+
+  Serial.println("Testing the sonar sensor");
+  while(1)
+  {
+    // Get distance
+    distance = get_distance();
+    Serial.print(distance);
+    Serial.println(" cm");
+    delay(200);
+  }
+}
+
+void test_led_matrix()
+{
+  Serial.println("Testing LED matrix");
+  while(1)
+  {
+    writeArduinoOnMatrix();
+    delay(200);
+    Serial.println("Testing LED matrix");
+  }
+}
+
 void loop() { 
 
   double distance = 0;
+
+  //Test 
+  //test_sonar();
+
+  //Test matrix
+  test_led_matrix();
 
   while(1)
   {
