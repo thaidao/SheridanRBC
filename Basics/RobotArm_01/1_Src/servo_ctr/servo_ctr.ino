@@ -24,6 +24,13 @@ Servo servo_4; // servo object representing the MG 996R servo
 #define SVM_CTR_3 5
 #define SVM_CTR_4 6
 
+// define the motor index
+#define SVM_0 0 
+#define SVM_1 1
+#define SVM_2 2
+#define SVM_3 3
+#define SVM_4 4
+
 #define NUM_SERVO 5
 const Servo* svm_table[NUM_SERVO]=
 {
@@ -38,22 +45,88 @@ int ServoCurAnglePos[NUM_SERVO];
 void setup() {
   servo_0.attach(SVM_CTR_0);
   servo_1.attach(SVM_CTR_1);
-
+  servo_2.attach(SVM_CTR_2);
+  servo_3.attach(SVM_CTR_3);
+  servo_4.attach(SVM_CTR_4);
   Serial.begin(9600);
 }
 
-//void svm_baby_step(Servo* svm, int angle, int totalStep, int delayTime)
+void svm_baby_step2(int servoIdx, int startAngle, int endAngle, int delayTime)
+{
+  Serial.print("servoIdx: ");
+  Serial.print(servoIdx);
+
+  Serial.print(" startAngle: ");
+  Serial.print(startAngle);
+
+  Serial.print(" endAngle: ");
+  Serial.print(endAngle);
+  Serial.println();
+
+  int intialAngle = startAngle;
+  int DIFF_ANGLE = 1;
+  if(startAngle > endAngle)
+  {
+    intialAngle = startAngle;
+    DIFF_ANGLE = -1;
+  }
+  else if (startAngle == endAngle)
+  {
+    svm_table[servoIdx]->write(startAngle);
+    svm_update_cur_angle(servoIdx,startAngle);
+    return;
+  }
+
+  int diffAngle = abs(startAngle-endAngle);
+  Serial.print(" diffAngle: ");
+  Serial.print(diffAngle);
+  Serial.println();
+
+  Serial.print("intialAngle: ");
+  for(int step = 0; step < diffAngle; step ++)
+  {
+
+    Serial.print(intialAngle);
+    Serial.print(",");
+
+    svm_table[servoIdx]->write(intialAngle);
+    svm_update_cur_angle(servoIdx,intialAngle);
+    intialAngle += DIFF_ANGLE;
+    delay(delayTime);
+  }
+  Serial.println();
+}
+
 void svm_baby_step(int servoIdx, int angle, int totalStep, int delayTime)
 {
   int anglePerStep = 0;
-  int nextAngle = 0;
+  int startAngle =  svm_get_cur_angle(servoIdx);
+  int nextAngle = 0;//startAngle; 
+  int diffAngle = abs(angle-nextAngle);
 
   //Caculate angle for each step
-  anglePerStep = angle/totalStep;
+  anglePerStep = diffAngle/totalStep;
+
   if(anglePerStep <= 1 )
   {
     anglePerStep = 1;
   }
+
+  Serial.print("servoIdx: ");
+  Serial.print(servoIdx);
+
+  Serial.print(" startAngle: ");
+  Serial.print(startAngle);
+
+  if (angle < startAngle)
+  {
+    nextAngle = angle;
+  }
+
+  Serial.print(" nextAngle: ");
+  Serial.print(nextAngle);
+
+  Serial.println();
 
   for(int cnt = 0; cnt < totalStep; cnt++)
   {
@@ -79,7 +152,20 @@ void svm_ctr_rotate(int servoIdx, int angle, int totalStep, int delayTime)
     return;
   }
 
+  //int start_angle = svm_get_cur_angle(servoIdx);
+
   svm_baby_step(servoIdx, angle, totalStep, delayTime);
+}
+
+//Control servo by angle
+void svm_ctr_rotate2(int servoIdx, int angle, int totalStep, int delayTimeEachStep)
+{
+  if(servoIdx > NUM_SERVO - 1 || angle < 0 || angle > 180 || totalStep < 0 || delayTimeEachStep < 0){
+    return;
+  }
+
+  int startAngle = svm_get_cur_angle(servoIdx);
+  svm_baby_step2(servoIdx,startAngle,angle, delayTimeEachStep);
 }
 
 //Save the latest angle
@@ -88,28 +174,107 @@ void svm_update_cur_angle(int servoIdx, int curAngle)
   ServoCurAnglePos[servoIdx] = curAngle;
 }
 
+int svm_get_cur_angle(int servoIdx)
+{
+  return ServoCurAnglePos[servoIdx];
+}
+
+
 //Set init state
+// void svm_init_state()
+// {
+//   //Reset all motor to intial postion
+//   for(int cnt = 0; cnt < NUM_SERVO; cnt ++)
+//   {
+//     //@todo: improve code, more flexible for intial state
+//     svm_ctr_rotate(svm_table[cnt],0,1,200);
+//   }
+// }
+
 void svm_init_state()
 {
-  //Reset all motor to intial postion
-  for(int cnt = 0; cnt < NUM_SERVO; cnt ++)
+  // svm_table[SVM_0]->write(0);
+  // delay(1000);
+  // svm_table[SVM_1]->write(45);
+  // delay(1000);
+  // svm_table[SVM_2]->write(135);
+  // delay(1000);
+  // svm_table[SVM_3]->write(0);
+  // delay(1000);
+  // svm_table[SVM_4]->write(90);
+  // delay(1000);
+
+  // svm_ctr_rotate(SVM_4,90,45,100);
+  // delay(1000);
+  // svm_ctr_rotate(SVM_3,0,45,100);
+  // delay(1000);
+  // svm_ctr_rotate(SVM_2,135,45,100);
+  // delay(1000);
+  // svm_ctr_rotate(SVM_1,45,45,100);
+  // delay(1000);
+  // svm_ctr_rotate(SVM_0,0,45,200);
+  // delay(1000);
+
+  // svm_ctr_rotate(SVM_4,90,45,100);
+  // delay(1000);
+  // svm_ctr_rotate(SVM_3,0,45,100);
+  // delay(1000);
+  // svm_ctr_rotate(SVM_2,90,45,100);
+  // delay(1000);
+//while(1);
+{
+
+
+#if 0 //test servo 2 okay
+  // svm_ctr_rotate2(SVM_4,0,45,50);
+  // delay(1000);
+  // svm_ctr_rotate2(SVM_4,45,45,50);
+  // delay(1000);
+  // svm_ctr_rotate2(SVM_4,90,45,50);
+  // delay(1000);
+  // svm_ctr_rotate2(SVM_4,180,45,50);
+  // delay(1000);
+  // svm_ctr_rotate2(SVM_4,90,45,50);
+  // delay(1000);
+  // svm_ctr_rotate2(SVM_4,45,45,50);
+  // delay(1000);
+  // svm_ctr_rotate2(SVM_4,0,45,50);
+  // delay(1000);
+  // svm_ctr_rotate2(SVM_4,90,45,50);
+  // delay(1000);
+#endif
+
+  while(1)
   {
-    //@todo: improve code, more flexible for intial state
-    svm_ctr_rotate(svm_table[cnt],0,1,200);
+    int svmIdx = SVM_2;
+    svm_ctr_rotate2(svmIdx,150,1000,50);
+    delay(1000);
+    // svm_ctr_rotate2(svmIdx,45,1000,50);
+    // delay(1000);
+    // svm_ctr_rotate2(svmIdx,180,1000,50);
+    // delay(3000);
+    // svm_ctr_rotate2(svmIdx,45,1000,50);
+    // delay(1000);
+    // svm_ctr_rotate2(svmIdx,0,1000,50);
+    // delay(1000);
   }
+}
+
+  // svm_ctr_rotate(SVM_0,0,45,200);
+  // delay(1000);
 }
 
 void svm_selftest_simple()
 {
-  svm_table[SVM_CTR_0]->write(0);
+  svm_table[SVM_0]->write(0);
   delay(1000);
-  svm_table[SVM_CTR_1]->write(0);
+  svm_table[SVM_1]->write(0);
   delay(1000);
-  svm_table[SVM_CTR_2]->write(0);
+  svm_table[SVM_2]->write(0);
   delay(1000);
-  svm_table[SVM_CTR_3]->write(0);
+  svm_table[SVM_3]->write(0);
   delay(1000);
-  svm_table[SVM_CTR_4]->write(0);
+  svm_table[SVM_4]->write(0);
   delay(1000);
 }
 
@@ -132,15 +297,31 @@ void svm_selftest_all()
 void loop()
 {
   Serial.println("Robot arm's program");
+  // svm_table[SVM_4]->write(0);
+  // delay(1000);
+  // svm_table[SVM_4]->write(90);
+  // delay(1000);
 
+  // servo_0.write(135);
+  // delay(1000);
+  // servo_0.write(0);
+  // delay(1000);
+
+// while(1)
+// {
+//   svm_ctr_rotate(SVM_0,135,50,100);
+//   delay(1000);
+//   svm_ctr_rotate(SVM_0,0,50,100);
+//   delay(1000);
+// }
   //Init state
   svm_init_state();
 
   //Set all intial angle of servo are zero
-  svm_selftest_simple();
+  //svm_selftest_simple();
 
   //Self rotate all motor from zero to 180 degree
-  svm_selftest_all();
+  //svm_selftest_all();
 
   //main function
   while(1);

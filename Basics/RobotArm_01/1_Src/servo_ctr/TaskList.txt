@@ -1,0 +1,25 @@
+1:20 AM 6/1/2024
+Task list
+
+Servo
+- Make the cable
+- Power supply for all motors
+- Dancing (demo 1). 
+Idea:
+- Tay người uốn lượn, sang tay robot
+
+
+LED matrix
+
+Sonar sensor
+
+Joy stick controller
+
+Release one:
+- Follow the hand only when the hand close to robot arm
+
+Rasberry PI
+
+ROS
+
+Simulation
