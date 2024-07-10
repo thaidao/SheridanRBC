@@ -243,14 +243,26 @@ void svm_init_state()
   // svm_ctr_rotate2(SVM_4,90,45,50);
   // delay(1000);
 #endif
+    int svmIdx = SVM_0;
+    svm_ctr_rotate2(svmIdx,0,1000,500);
+    delay(1000);
+    svm_ctr_rotate2(svmIdx,45,1000,500);
+    delay(1000);
 
+    svmIdx = SVM_1;
+    svm_ctr_rotate2(svmIdx,0,1000,500);
+    delay(1000);
+    svm_ctr_rotate2(svmIdx,45,1000,500);
+    delay(1000);
+
+  while(1);
   while(1)
   {
-    int svmIdx = SVM_2;
-    svm_ctr_rotate2(svmIdx,150,1000,50);
+    int svmIdx = SVM_1;
+    svm_ctr_rotate2(svmIdx,0,1000,50);
     delay(1000);
-    // svm_ctr_rotate2(svmIdx,45,1000,50);
-    // delay(1000);
+    svm_ctr_rotate2(svmIdx,90,1000,50);
+    delay(1000);
     // svm_ctr_rotate2(svmIdx,180,1000,50);
     // delay(3000);
     // svm_ctr_rotate2(svmIdx,45,1000,50);
