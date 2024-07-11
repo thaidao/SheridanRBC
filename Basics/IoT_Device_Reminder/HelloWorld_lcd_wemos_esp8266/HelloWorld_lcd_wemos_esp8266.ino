@@ -73,6 +73,19 @@ const char* newwordTable[] = {
   "fragile",
   "equilibrium" };
 
+const char* newwordTable1[] = { 
+  "dao van",  //plagiarism 
+  "soi moi", //nitpicking
+  "nhan hau",  //"lenient",
+  "dau mo mong",
+  "danh hay tranh",
+  "gay hai",
+  "cai nhau",
+  "khac sau",
+  "chieu toi",
+  "mong manh",
+  "can bang" };
+
 void setup() {
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
@@ -92,8 +105,11 @@ void loop() {
   {
     if(newwordTable[cnt] != 0)
     {
+      lcd.setCursor(0, 0);
+      lcd.print(newwordTable[cnt]);
       lcd.setCursor(0, 1);
-      lcd.print(newwordTable[cnt++]);
+      lcd.print(newwordTable1[cnt]);
+      cnt++;
       delay(3000);
       lcd.clear();
     }
