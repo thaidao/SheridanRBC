@@ -14,6 +14,44 @@
 
 Firebase firebase(REFERENCE_URL);
 
+#define BUFF_MAX_LEN_WORD					      32
+#define BUFF_MAX_LEN_PARTOFSPECH			  8
+#define BUFF_MAX_LEN_PRONUNCIATION			32
+#define BUFF_MAX_LEN_TRANSLATION			  32
+#define BUFF_MAX_LEN_DEFINITIONS			  96
+#define BUFF_MAX_LEN_COMMON_PHRASES			96
+
+struct Vocab_t{
+  // const char *word;
+  // const char *partOfSpech;
+  // const char *pronunciation;
+  // const char *translation;
+  // const char *definitions;
+  // const char *commonPhrases;
+
+  char word[BUFF_MAX_LEN_WORD];
+  char partOfSpech[BUFF_MAX_LEN_PARTOFSPECH];
+  char pronunciation[BUFF_MAX_LEN_PRONUNCIATION];
+  char translation[BUFF_MAX_LEN_TRANSLATION];
+  char definitions[BUFF_MAX_LEN_DEFINITIONS];
+  char commonPhrases[BUFF_MAX_LEN_COMMON_PHRASES];
+
+  int   iPushedGotItCnt;      // Number of user push "Got it" button
+  bool  bDisplay;             // Display this word or not in future
+
+};
+
+// struct VocabDispConfig_t{
+//   int   iPushedGotItCnt;      // Number of user push "Got it" button
+//   bool  bDisplay;             // Display this word or not in future
+// };
+
+#define VOCAB_DOWNLOAD_MAX_NUM        10               //Number of words, device will download from server
+#define VOCAB_SET_MAX_SIZE            10
+Vocab_t stCurVocabSet[VOCAB_SET_MAX_SIZE];             //First priority for diplaying
+Vocab_t stOldVocabSet[VOCAB_SET_MAX_SIZE];             //Old
+Vocab_t stBufferVocabSet[3*VOCAB_SET_MAX_SIZE];        //Number of vocab download from database
+
 void setup() {
   Serial.begin(115200);
   pinMode(LED_BUILTIN, OUTPUT);
@@ -79,8 +117,19 @@ void setup() {
     const char* received_translation = obj["translation"];
     const char* received_definitions = obj["definitions"];
     const char* received_common_phrases = obj["common_phrases"];
+    
+    //Store value
+    strcpy(stCurVocabSet[cnt].word,received_word);
+    strcpy(stCurVocabSet[cnt].partOfSpech,received_partOfSpeech); 
+    strcpy(stCurVocabSet[cnt].pronunciation,received_pronunciation); 
+    strcpy(stCurVocabSet[cnt].translation,received_translation);
+    strcpy(stCurVocabSet[cnt].definitions,received_definitions); 
+    strcpy(stCurVocabSet[cnt].commonPhrases,received_common_phrases); 
 
-    // Print data
+    stCurVocabSet[cnt].iPushedGotItCnt = 0;   // Number of user push "Got it" button
+    stCurVocabSet[cnt].bDisplay = true;       // Display this word or not in future
+
+    // Print data via serial for debug/or display in other device
     Serial.print(cnt++);
     Serial.println(".");
     Serial.print("received_word:\t");
@@ -100,6 +149,11 @@ void setup() {
 
     Serial.print("received_common_phrases:\t\t");
     Serial.println(received_common_phrases);
+
+
+    //Allow receiving only 10 latest word, Ignore a rest of data
+    if (cnt > VOCAB_DOWNLOAD_MAX_NUM)
+      break;
   }
 }
 
