@@ -86,6 +86,12 @@ void lcd_print_line(int row, const char* str)
   lcd.print(str);
 }
 
+void lcd_print_xy(int col, int row, const char* str)
+{
+  lcd.setCursor(col,row);
+  lcd.print(str);
+}
+
 void lcd_clear_line(int row)
 {
   lcd.setCursor(0,row);
@@ -271,11 +277,38 @@ void lcd_display()
       //partOfSpech
 
       lcd_print_line(1, psCurVocabSet[cnt].definitions);
+      delay(1000);
+
+      int len = strlen(psCurVocabSet[cnt].definitions);
+
+      if( len > 16)
+      {
+        for (int positionCounter = 0; positionCounter < BUFF_MAX_LEN_DEFINITIONS - len; positionCounter++) {
+          // scroll one position left:
+          lcd.scrollDisplayLeft();
+          // wait a bit:
+          delay(500);
+        }
+      }
       delay(3000);
       lcd.clear();
 
       lcd_print_line(0, psCurVocabSet[cnt].translation);
       lcd_print_line(1, psCurVocabSet[cnt].commonPhrases);
+      delay(1000);
+
+      len = strlen(psCurVocabSet[cnt].commonPhrases);
+
+      if( len > 16)
+      {
+        for (int positionCounter = 0; positionCounter < BUFF_MAX_LEN_DEFINITIONS - len; positionCounter++) {
+          // scroll one position left:
+          lcd.scrollDisplayLeft();
+          // wait a bit:
+          delay(500);
+        }
+      }
+
       delay(3000);
       lcd.clear();
     }
