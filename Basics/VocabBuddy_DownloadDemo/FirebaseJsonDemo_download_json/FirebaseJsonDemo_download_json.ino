@@ -14,6 +14,12 @@
 
 Firebase firebase(REFERENCE_URL);
 
+#include <LiquidCrystal.h>
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+const int rs = 0, en = 2, d4 = 4, d5 = 14, d6 = 12, d7 = 13; // for wemos d1 esp8266 + lcd robot shield d1
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
 #define BUFF_MAX_LEN_WORD					      32
 #define BUFF_MAX_LEN_PARTOFSPECH			  8
 #define BUFF_MAX_LEN_PRONUNCIATION			32
@@ -46,16 +52,49 @@ struct Vocab_t{
 //   bool  bDisplay;             // Display this word or not in future
 // };
 
-#define VOCAB_DOWNLOAD_MAX_NUM        10               //Number of words, device will download from server
-#define VOCAB_SET_MAX_SIZE            10
+#define VOCAB_DOWNLOAD_MAX_NUM        5               //Number of words, device will download from server
+#define VOCAB_SET_MAX_SIZE            5
 Vocab_t stCurVocabSet[VOCAB_SET_MAX_SIZE];             //First priority for diplaying
 Vocab_t stOldVocabSet[VOCAB_SET_MAX_SIZE];             //Old
-Vocab_t stBufferVocabSet[3*VOCAB_SET_MAX_SIZE];        //Number of vocab download from database
+//Vocab_t stBufferVocabSet[3*VOCAB_SET_MAX_SIZE];        //Number of vocab download from database
 
-void setup() {
-  Serial.begin(115200);
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
+
+//For debug purpose
+#define DBG_EN  1
+
+void printDbg(const char* str)
+{
+  #ifdef DBG_EN
+    Serial.println(str);
+  #endif
+}
+
+
+//Set up LCD
+void setup_lcd()
+{
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  // Print a message to the LCD.
+  lcd.print("hello, new land!");
+  //lcd.autoscroll();
+}
+
+void lcd_print_line(int row, const char* str)
+{
+  lcd.setCursor(0,row);
+  lcd.print(str);
+}
+
+void lcd_clear_line(int row)
+{
+  lcd.setCursor(0,row);
+  lcd.print("                ");
+}
+
+//Set up wifi
+int setup_wifi()
+{
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
   delay(1000);
@@ -67,9 +106,18 @@ void setup() {
   Serial.println(_SSID);
   WiFi.begin(_SSID, _PASSWORD);
 
+  int timeoutCnt = 0;
+  //lcd_clear_line(0);
+  lcd.clear();
+  lcd_print_line(1,"Waiting for wifi");
+
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print("-");
+    //lcd.scrollDisplayLeft();
+    
+    if (timeoutCnt++ > 600)
+      return 1;
   }
 
   Serial.println("");
@@ -82,18 +130,42 @@ void setup() {
   Serial.println("/");
   digitalWrite(LED_BUILTIN, HIGH);
 
+  return 0;
+}
+
+//General setup
+void setup() {
+
+  int ret = 0;
+
+  //Set up serial
+  Serial.begin(115200);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+
+  //Set up lcd 16x2
+  setup_lcd();
+  //return;
+
+  //Set up wifi
+  ret = setup_wifi();
+
+  //Set up lcd 16x2
+  setup_lcd();
+
+  lcd.clear();
+  // if(ret){
+  //   lcd.print("Wifi error!!!");
+  // }else{
+  //   lcd.print("Wifi connected!!!");
+  // }
+
+#if 1
 //================================================================//
 //================================================================//
-
-  // Write some data to the realtime database.
-  // firebase.setString("Example/setString", "It's Working");
-  // firebase.setInt("Example/setInt", 123);
-  // firebase.setFloat("Example/setFloat", 45.32);
-
-  //firebase.setString("dict/common_phrases/test", "Thomas Dao");
-
   firebase.json(true);              // Make sure to add this line.
   
+  //Get data from Firebase server
   String data = firebase.getString("set_1");  // Get data from the database.
   Serial.print("set_1:\t");
   Serial.println(data);
@@ -155,9 +227,73 @@ void setup() {
     if (cnt > VOCAB_DOWNLOAD_MAX_NUM)
       break;
   }
+#endif
 }
 
+void lcd_display()
+{
 
+  int cnt = 0;
+  const Vocab_t* psCurVocabSet = stCurVocabSet;
+
+  printDbg("lcd_display_start");
+
+  //stCurVocabSet[cnt].bDisplay
+
+  //lcd.autoscroll();
+
+  for(cnt = 0;cnt<VOCAB_DOWNLOAD_MAX_NUM;cnt++)
+  {
+    if(psCurVocabSet[cnt].bDisplay)
+    {
+
+      //Serial.print("received_word:\t");
+      Serial.println(psCurVocabSet[cnt].word);
+
+      //Serial.print("received_partOfSpeech:\t\t");
+      Serial.println(psCurVocabSet[cnt].pronunciation);
+
+      // Serial.print("received_pronunciation:\t\t");
+      // Serial.println(received_pronunciation);
+
+      // Serial.print("received_translation:\t\t");
+      // Serial.println(received_translation);
+
+      // Serial.print("received_definitions:\t\t");
+      // Serial.println(received_definitions);
+
+      // Serial.print("received_common_phrases:\t\t");
+      // Serial.println(received_common_phrases);
+
+
+      lcd_print_line(0, psCurVocabSet[cnt].word);
+      //lcd_print_line(1, psCurVocabSet[cnt].pronunciation);      //Challenge: special characters
+      //partOfSpech
+
+      lcd_print_line(1, psCurVocabSet[cnt].definitions);
+      delay(3000);
+      lcd.clear();
+
+      lcd_print_line(0, psCurVocabSet[cnt].translation);
+      lcd_print_line(1, psCurVocabSet[cnt].commonPhrases);
+      delay(3000);
+      lcd.clear();
+    }
+  }
+
+  printDbg("lcd_display_end");
+}
+
+void lcd_test()
+{
+  lcd.setCursor(0, 0);
+  lcd.print("Test line 1st");
+  lcd.setCursor(0, 1);
+  lcd.print("Test line 2nd");
+
+  delay(2000);
+  lcd.clear();
+}
 void loop() {
   // // Nothing
   //   // Write some data to the realtime database.
@@ -174,4 +310,15 @@ void loop() {
   // }
 
   //while(1);
+
+  lcd_display();
+
+  // lcd.setCursor(0, 1);
+  // // print the number of seconds since reset:
+  // lcd.print(millis() / 1000);
+
+  // while(1){
+  //   lcd_test();
+  // }
+  //delay(2000);
 }

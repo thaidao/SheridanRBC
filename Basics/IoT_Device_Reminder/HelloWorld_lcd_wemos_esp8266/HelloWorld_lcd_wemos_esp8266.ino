@@ -93,6 +93,17 @@ void setup() {
   lcd.print("hello, new world!");
 }
 
+void lcd_test()
+{
+  lcd.setCursor(0, 0);
+  lcd.print("Test line 1st");
+  lcd.setCursor(0, 1);
+  lcd.print("Test line 2nd");
+
+  delay(2000);
+  lcd.clear();
+}
+
 void loop() {
   // set the cursor to column 0, line 1
   // (note: line 1 is the second row, since counting begins with 0):
@@ -103,18 +114,19 @@ void loop() {
   int cnt = 0;
   while(1)
   {
-    if(newwordTable[cnt] != 0)
-    {
-      lcd.setCursor(0, 0);
-      lcd.print(newwordTable[cnt]);
-      lcd.setCursor(0, 1);
-      lcd.print(newwordTable1[cnt]);
-      cnt++;
-      delay(3000);
-      lcd.clear();
-    }
-    else
-      cnt = 0;
+    // if(newwordTable[cnt] != 0)
+    // {
+    //   lcd.setCursor(0, 0);
+    //   lcd.print(newwordTable[cnt]);
+    //   lcd.setCursor(0, 1);
+    //   lcd.print(newwordTable1[cnt]);
+    //   cnt++;
+    //   delay(3000);
+    //   lcd.clear();
+    // }
+    // else
+    //   cnt = 0;
+    lcd_test();
   }
 }
 

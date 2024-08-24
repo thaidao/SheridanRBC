@@ -1,0 +1,104 @@
+{
+  "set_1": [
+    {
+      "word": "outlook",
+      "part_of_speech": "noun",
+      "pronunciation": "ˈaʊtlʊk",
+      "translation": "quan điểm",
+      "definitions": "A person's point of view or general attitude to life.",
+      "common_phrases": "positive outlook",
+      "audio_pronunciation": "https://example.com/audio/outlook.mp3",
+      "notes": "Having a positive outlook can improve one's mental health."
+    },
+    {
+      "word": "praise",
+      "part_of_speech": "verb",
+      "pronunciation": "preɪz",
+      "translation": "khen ngợi",
+      "definitions": "Express warm approval or admiration of.",
+      "common_phrases": "offer praise",
+      "audio_pronunciation": "https://example.com/audio/praise.mp3",
+      "notes": "Praise can be a powerful motivator."
+    },
+    {
+      "word": "rather",
+      "part_of_speech": "adverb",
+      "pronunciation": "ˈræðər",
+      "translation": "khá là",
+      "definitions": "Used to indicate one's preference in a particular situation.",
+      "common_phrases": "would rather",
+      "audio_pronunciation": "https://example.com/audio/rather.mp3",
+      "notes": "Often used to express a choice or preference."
+    },
+    {
+      "word": "blatant lies",
+      "part_of_speech": "noun phrase",
+      "pronunciation": "ˈbleɪtənt laɪz",
+      "translation": "lời nói dối trắng trợn",
+      "definitions": "Obvious and intentional falsehoods.",
+      "common_phrases": "tell blatant lies",
+      "audio_pronunciation": "https://example.com/audio/blatant_lies.mp3",
+      "notes": "Blatant lies are often easily recognized by others."
+    },
+    {
+      "word": "dismissive",
+      "part_of_speech": "adjective",
+      "pronunciation": "dɪsˈmɪsɪv",
+      "translation": "coi thường",
+      "definitions": "Feeling or showing that something is unworthy of consideration.",
+      "common_phrases": "dismissive attitude",
+      "audio_pronunciation": "https://example.com/audio/dismissive.mp3",
+      "notes": "Being dismissive can damage relationships."
+    },
+    {
+      "word": "grumpy",
+      "part_of_speech": "adjective",
+      "pronunciation": "ˈɡrʌmpi",
+      "translation": "cáu kỉnh",
+      "definitions": "Bad-tempered and irritable.",
+      "common_phrases": "feel grumpy",
+      "audio_pronunciation": "https://example.com/audio/grumpy.mp3",
+      "notes": "People often feel grumpy when they are tired or hungry."
+    },
+    {
+      "word": "eyebrow",
+      "part_of_speech": "noun",
+      "pronunciation": "ˈaɪbraʊ",
+      "translation": "lông mày",
+      "definitions": "The strip of hair growing on the ridge above a person's eye socket.",
+      "common_phrases": "raise an eyebrow",
+      "audio_pronunciation": "https://example.com/audio/eyebrow.mp3",
+      "notes": "Raising an eyebrow can signal surprise or skepticism."
+    },
+    {
+      "word": "laureate",
+      "part_of_speech": "noun",
+      "pronunciation": "ˈlɔːriət",
+      "translation": "người đoạt giải",
+      "definitions": "A person who is honored with an award for outstanding creative or intellectual achievement.",
+      "common_phrases": "Nobel laureate",
+      "audio_pronunciation": "https://example.com/audio/laureate.mp3",
+      "notes": "Laureates are often recognized internationally for their contributions."
+    },
+    {
+      "word": "contingent upon",
+      "part_of_speech": "phrase",
+      "pronunciation": "kənˈtɪndʒənt əˈpɒn",
+      "translation": "phụ thuộc vào",
+      "definitions": "Depending on something else that may or may not happen.",
+      "common_phrases": "contingent upon approval",
+      "audio_pronunciation": "https://example.com/audio/contingent_upon.mp3",
+      "notes": "Often used in contracts or agreements."
+    },
+    {
+      "word": "lousy",
+      "part_of_speech": "adjective",
+      "pronunciation": "ˈlaʊzi",
+      "translation": "tệ hại",
+      "definitions": "Very poor or bad; disgusting.",
+      "common_phrases": "feel lousy",
+      "audio_pronunciation": "https://example.com/audio/lousy.mp3",
+      "notes": "Lousy is an informal term often used to describe something unpleasant."
+    }
+  ]
+}
