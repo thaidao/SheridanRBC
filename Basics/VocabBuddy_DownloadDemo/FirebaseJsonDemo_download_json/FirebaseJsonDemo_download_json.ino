@@ -169,8 +169,14 @@ void setup() {
   //Set up lcd 16x2
   setup_lcd();
 
+  //synchronize with database
+  sync_database();
 
-#if 1
+}
+
+void sync_database()
+{
+  #if 1
 //================================================================//
 //================================================================//
   firebase.json(true);              // Make sure to add this line.
@@ -238,6 +244,7 @@ void setup() {
       break;
   }
 #endif
+
 }
 
 void lcd_display()
