@@ -78,6 +78,7 @@ void setup_lcd()
   // Print a message to the LCD.
   lcd.print("hello, new land!");
   //lcd.autoscroll();
+  lcd.clear();
 }
 
 void lcd_print_line(int row, const char* str)
@@ -122,7 +123,7 @@ int setup_wifi()
     Serial.print("-");
     //lcd.scrollDisplayLeft();
     
-    if (timeoutCnt++ > 600)
+    if (timeoutCnt++ > 360) //3 min
       return 1;
   }
 
@@ -138,33 +139,36 @@ int setup_wifi()
 
   return 0;
 }
+void (*resetFunc)(void) = 0; //declare reset function att address 0
 
+void setup_serial()
+{
+  //Set up serial
+  Serial.begin(115200);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+}
 //General setup
 void setup() {
 
   int ret = 0;
 
   //Set up serial
-  Serial.begin(115200);
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
-
-  //Set up lcd 16x2
-  setup_lcd();
-  //return;
+  setup_serial();
 
   //Set up wifi
   ret = setup_wifi();
+  if(ret)
+  {
+    lcd_print_line(1,"Resetting wifi");
+    delay(1000);
+    printDbg("Resetting wifi");
+    resetFunc();
+  }
 
   //Set up lcd 16x2
   setup_lcd();
 
-  lcd.clear();
-  // if(ret){
-  //   lcd.print("Wifi error!!!");
-  // }else{
-  //   lcd.print("Wifi connected!!!");
-  // }
 
 #if 1
 //================================================================//
