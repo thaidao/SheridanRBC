@@ -14,6 +14,8 @@
 
 Firebase firebase(REFERENCE_URL);
 
+#include "convertUnaccent.hpp"
+
 #include <LiquidCrystal.h>
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
@@ -287,7 +289,20 @@ void lcd_display()
       //lcd_print_line(1, psCurVocabSet[cnt].pronunciation);      //Challenge: special characters
       //partOfSpech
 
-      lcd_print_line(1, psCurVocabSet[cnt].definitions);
+// #define BUFF_MAX_LEN_WORD					      32
+// #define BUFF_MAX_LEN_PARTOFSPECH			  8
+// #define BUFF_MAX_LEN_PRONUNCIATION			32
+// #define BUFF_MAX_LEN_TRANSLATION			  32
+// #define BUFF_MAX_LEN_DEFINITIONS			  96
+// #define BUFF_MAX_LEN_COMMON_PHRASES			96
+
+      char pUnAccentDefintion[BUFF_MAX_LEN_DEFINITIONS]; 
+      convert_to_unaccented((char*)psCurVocabSet[cnt].definitions, pUnAccentDefintion);
+      printDbg(pUnAccentDefintion);
+
+      //lcd_print_line(1, psCurVocabSet[cnt].definitions);
+      lcd_print_line(1, pUnAccentDefintion);
+      
       delay(1000);
 
       int len = strlen(psCurVocabSet[cnt].definitions);
@@ -328,6 +343,48 @@ void lcd_display()
   printDbg("lcd_display_end");
 }
 
+void lcd_display_word()
+{
+  int cnt = 0;
+  const Vocab_t* psCurVocabSet = stCurVocabSet;
+
+  printDbg("lcd_display_start");
+
+  for(cnt = 0;cnt<VOCAB_DOWNLOAD_MAX_NUM;cnt++)
+  {
+    if(psCurVocabSet[cnt].bDisplay)
+    {
+
+      //Serial.print("received_word:\t");
+      Serial.println(psCurVocabSet[cnt].word);
+
+      //Serial.print("received_partOfSpeech:\t\t");
+      Serial.println(psCurVocabSet[cnt].pronunciation);
+
+      //LCD - scene 1
+      //line 0
+      lcd_print_line(0, psCurVocabSet[cnt].word);
+
+      //line 1
+      char unAccentTranslationBuff[BUFF_MAX_LEN_TRANSLATION]; 
+      memset(unAccentTranslationBuff, 'A', sizeof(unAccentTranslationBuff) - 1);
+
+      printDbg("Before:");
+      printDbg(psCurVocabSet[cnt].translation);
+      convert_to_unaccented((char*)psCurVocabSet[cnt].translation, unAccentTranslationBuff);
+
+      printDbg("After:");
+      printDbg(unAccentTranslationBuff);
+
+      lcd_print_line(1, unAccentTranslationBuff);   
+
+      delay(3000);
+      lcd.clear();
+    }
+  }
+  printDbg("lcd_display_end");
+}
+
 void lcd_test()
 {
   lcd.setCursor(0, 0);
@@ -354,8 +411,8 @@ void loop() {
   // }
 
   //while(1);
-
-  lcd_display();
+  lcd_display_word();
+  //lcd_display();
 
   // lcd.setCursor(0, 1);
   // // print the number of seconds since reset:
