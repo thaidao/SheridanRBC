@@ -1,0 +1,34 @@
+{
+  "set_1": [
+    {
+      "word": "outlook",
+      "part_of_speech": "noun",
+      "pronunciation": "ˈaʊtlʊk",
+      "translation": "quan điểm",
+      "definitions": "A person's point of view or general attitude to life.",
+      "common_phrases": "positive outlook",
+      "audio_pronunciation": "https://example.com/audio/outlook.mp3",
+      "notes": "Having a positive outlook can improve one's mental health."
+    },
+    {
+      "word": "praise",
+      "part_of_speech": "verb",
+      "pronunciation": "preɪz",
+      "translation": "khen ngợi",
+      "definitions": "Express warm approval or admiration of.",
+      "common_phrases": "offer praise",
+      "audio_pronunciation": "https://example.com/audio/praise.mp3",
+      "notes": "Praise can be a powerful motivator."
+    },
+    {
+      "word": "rather",
+      "part_of_speech": "adverb",
+      "pronunciation": "ˈræðər",
+      "translation": "khá là",
+      "definitions": "Used to indicate one's preference in a particular situation.",
+      "common_phrases": "would rather",
+      "audio_pronunciation": "https://example.com/audio/rather.mp3",
+      "notes": "Often used to express a choice or preference."
+    }
+  ]
+}

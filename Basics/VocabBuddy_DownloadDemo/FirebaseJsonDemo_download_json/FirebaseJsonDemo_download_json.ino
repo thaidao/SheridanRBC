@@ -14,7 +14,7 @@
 
 Firebase firebase(REFERENCE_URL);
 
-#include "convertUnaccent.hpp"
+#include "convertUnaccent.h"
 
 #include <LiquidCrystal.h>
 // initialize the library by associating any needed LCD interface pin
@@ -63,6 +63,13 @@ Vocab_t stOldVocabSet[VOCAB_SET_MAX_SIZE];             //Old
 
 //For debug purpose
 #define DBG_EN  1
+
+void test_unaccented_conversion(char *unicode_str) {
+    char unaccented_str[100];
+    convert_to_unaccented(unicode_str, unaccented_str);
+    Serial.println(unaccented_str);
+}
+
 
 void printDbg(const char* str)
 {
