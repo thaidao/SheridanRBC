@@ -26,6 +26,8 @@ Firebase firebase(REFERENCE_URL);
 const int rs = 0, en = 2, d4 = 4, d5 = 14, d6 = 12, d7 = 13; // for wemos d1 esp8266 + lcd robot shield d1
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+const int buttonDispModePin = 3;  // the number of the Display mode pin
+
 #define BUFF_MAX_LEN_WORD					      32
 #define BUFF_MAX_LEN_PARTOFSPECH			  8
 #define BUFF_MAX_LEN_PRONUNCIATION			32
@@ -64,6 +66,11 @@ Vocab_t stCurVocabSet[VOCAB_SET_MAX_SIZE];             //First priority for dipl
 Vocab_t stOldVocabSet[VOCAB_SET_MAX_SIZE];             //Old
 //Vocab_t stBufferVocabSet[3*VOCAB_SET_MAX_SIZE];        //Number of vocab download from database
 
+
+#define MODE_NORMAL         0x00  //Display all
+#define MODE_FAST_FORWARD   0x01  //Display word and translation only
+
+int gDispMode = MODE_NORMAL;
 
 //For debug purpose
 #define DBG_EN  1
@@ -110,6 +117,35 @@ void lcd_clear_line(int row)
 {
   lcd.setCursor(0,row);
   lcd.print("                ");
+}
+
+void setup_displayMode()
+{
+  // initialize the buttonDispModePin pin as an input:
+  pinMode(buttonDispModePin, INPUT);
+
+  //#define MODE_NORMAL         0x00  //Display all
+  //#define MODE_FAST_FORWARD   0x01  //Display word and translation only
+  gDispMode |= MODE_NORMAL;
+}
+
+void setDisplayMode(int mode)
+{
+  gDispMode |= mode;
+}
+
+void checkPinSwitchMode()
+{
+  // read the state of the pushbutton value:
+  int buttonState = digitalRead(buttonDispModePin);
+  if(buttonState == LOW)
+  {
+    setDisplayMode(MODE_FAST_FORWARD);
+  }
+  else
+  {
+    setDisplayMode(MODE_NORMAL); 
+  }
 }
 
 //Set up wifi
@@ -186,6 +222,9 @@ void setup() {
 
   //Set up lcd 16x2
   setup_lcd();
+
+  //Set up display mode
+  setup_displayMode();
 
   //synchronize with database
   sync_database();
@@ -434,8 +473,87 @@ void lcd_displayLongText() {
   }while(gPosition < len);
 }
 
+
+// Optimized function
+void lcd_display_word_optimized() {
+    const Vocab_t* psCurVocabSet = stCurVocabSet;
+    char tmpBuf[16];
+    char unAccentTranslationBuff[BUFF_MAX_LEN_TRANSLATION];
+
+    printDbg("lcd_display_start");
+
+    for (int cnt = 0; cnt < VOCAB_DOWNLOAD_MAX_NUM; cnt++) {
+        if (!psCurVocabSet[cnt].bDisplay) continue;
+
+        // Display word and pronunciation
+        Serial.println(psCurVocabSet[cnt].word);
+        Serial.println(psCurVocabSet[cnt].pronunciation);
+
+        // Prepare the word for LCD display
+        int len = strlen(psCurVocabSet[cnt].word);
+        if (len <= 12) {
+            snprintf(tmpBuf, sizeof(tmpBuf), "%s-%s", psCurVocabSet[cnt].word, psCurVocabSet[cnt].partOfSpech);
+            lcd_print_line(0, tmpBuf);
+        } else {
+            lcd_print_line(0, psCurVocabSet[cnt].word);
+        }
+
+        // Convert translation to unaccented version
+        printDbg("Before:");
+        printDbg(psCurVocabSet[cnt].translation);
+        convert_to_unaccented((char *)psCurVocabSet[cnt].translation, unAccentTranslationBuff);
+        printDbg("After:");
+        printDbg(unAccentTranslationBuff);
+        lcd_print_line(1, unAccentTranslationBuff);
+
+        delay(3000);
+        lcd.clear();
+
+        // Handle definitions
+        len = strlen(psCurVocabSet[cnt].definitions);
+        printDbg("definitions len:");
+        Serial.print(len);
+
+        lcd_print_line(0, psCurVocabSet[cnt].definitions);
+
+        if (len > 16 && len <= 40) {
+            delay(1000);
+            for (int positionCounter = 0; positionCounter < len - 16; positionCounter++) {
+                lcd.scrollDisplayLeft();
+                delay(400);
+            }
+        } else if (len > 40) {
+            lcd_displayLongText();
+        }
+
+        delay(1000);
+        lcd.clear();
+        delay(2000);
+
+        // Handle common phrases
+        lcd_print_line(0, psCurVocabSet[cnt].commonPhrases);
+        len = strlen(psCurVocabSet[cnt].commonPhrases);
+        printDbg("commonPhrases len:");
+        Serial.print(len);
+
+        if (len > 16) {
+            for (int positionCounter = 0; positionCounter < len - 16; positionCounter++) {
+                lcd.scrollDisplayLeft();
+                delay(300);
+            }
+        }
+
+        delay(1000);
+        lcd.clear();
+    }
+
+    printDbg("lcd_display_end");
+}
+
 //Main looo
 void loop() {
   //Display by context
   lcd_display_word();
+
+  //lcd_display_word_optimized();
 }
