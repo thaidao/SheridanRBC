@@ -265,93 +265,6 @@ void sync_database()
 
 }
 
-void lcd_display()
-{
-
-  int cnt = 0;
-  const Vocab_t* psCurVocabSet = stCurVocabSet;
-
-  printDbg("lcd_display_start");
-
-  //stCurVocabSet[cnt].bDisplay
-
-  //lcd.autoscroll();
-
-  for(cnt = 0;cnt<VOCAB_DOWNLOAD_MAX_NUM;cnt++)
-  {
-    if(psCurVocabSet[cnt].bDisplay)
-    {
-
-      //Serial.print("received_word:\t");
-      Serial.println(psCurVocabSet[cnt].word);
-
-      //Serial.print("received_partOfSpeech:\t\t");
-      Serial.println(psCurVocabSet[cnt].pronunciation);
-
-      // Serial.print("received_pronunciation:\t\t");
-      // Serial.println(received_pronunciation);
-
-      // Serial.print("received_translation:\t\t");
-      // Serial.println(received_translation);
-
-      // Serial.print("received_definitions:\t\t");
-      // Serial.println(received_definitions);
-
-      // Serial.print("received_common_phrases:\t\t");
-      // Serial.println(received_common_phrases);
-
-
-      lcd_print_line(0, psCurVocabSet[cnt].word);
-      //lcd_print_line(1, psCurVocabSet[cnt].pronunciation);      //Challenge: special characters
-      //partOfSpech
-
-      char pUnAccentDefintion[BUFF_MAX_LEN_DEFINITIONS]; 
-      convert_to_unaccented((char*)psCurVocabSet[cnt].definitions, pUnAccentDefintion);
-      printDbg(pUnAccentDefintion);
-
-      //lcd_print_line(1, psCurVocabSet[cnt].definitions);
-      lcd_print_line(1, pUnAccentDefintion);
-      
-      delay(1000);
-
-      int len = strlen(psCurVocabSet[cnt].definitions);
-
-      if( len > 16)
-      {
-        for (int positionCounter = 0; positionCounter < BUFF_MAX_LEN_DEFINITIONS - len; positionCounter++) {
-          // scroll one position left:
-          lcd.scrollDisplayLeft();
-          // wait a bit:
-          delay(500);
-        }
-      }
-      delay(3000);
-      lcd.clear();
-
-      lcd_print_line(0, psCurVocabSet[cnt].translation);
-      lcd_print_line(1, psCurVocabSet[cnt].commonPhrases);
-      delay(1000);
-
-      len = strlen(psCurVocabSet[cnt].commonPhrases);
-
-      if( len > 16)
-      {
-        for (int positionCounter = 0; positionCounter < BUFF_MAX_LEN_DEFINITIONS - len; positionCounter++) {
-          // scroll one position left:
-          lcd.scrollDisplayLeft();
-          // wait a bit:
-          delay(500);
-        }
-      }
-
-      delay(3000);
-      lcd.clear();
-      delay(2000);
-    }
-  }
-
-  printDbg("lcd_display_end");
-}
 
 // The message to scroll
 //const char *longText = "This is a very long text that needs to scroll on a 16x2 LCD screen!";
@@ -365,6 +278,7 @@ void lcd_display_word()
 
   printDbg("lcd_display_start");
 
+  //Display all words in one set
   for(cnt = 0;cnt<VOCAB_DOWNLOAD_MAX_NUM;cnt++)
   {
     if(psCurVocabSet[cnt].bDisplay)
@@ -378,8 +292,21 @@ void lcd_display_word()
       //=================================================
       //LCD - scene 1
       //line 0
-      lcd_print_line(0, psCurVocabSet[cnt].word);
       int len = strlen(psCurVocabSet[cnt].word);
+      char tmpBuf[16];
+
+      if(len <=12)
+      {
+        strncpy(tmpBuf,psCurVocabSet[cnt].word,len);
+        strncpy(&tmpBuf[len],"-",1);
+        strncpy(&tmpBuf[len+1],psCurVocabSet[cnt].partOfSpech,3);
+
+        lcd_print_line(0, tmpBuf);
+      }
+      else
+      {
+        lcd_print_line(0, psCurVocabSet[cnt].word);
+      }
 
       //line 1
       char unAccentTranslationBuff[BUFF_MAX_LEN_TRANSLATION]; 
@@ -394,7 +321,7 @@ void lcd_display_word()
 
       lcd_print_line(1, unAccentTranslationBuff);   
 
-      delay(5000);
+      delay(3000);
       lcd.clear();
 
       //=================================================
@@ -434,6 +361,7 @@ void lcd_display_word()
 
       delay(1000);
       lcd.clear();
+      delay(2000);
 
       //=================================================
       //LCD - scene 3
@@ -506,35 +434,8 @@ void lcd_displayLongText() {
   }while(gPosition < len);
 }
 
+//Main looo
 void loop() {
-  // // Nothing
-  //   // Write some data to the realtime database.
-  //   int cnt = 10;
-  //   int num = 100;
-  // while(cnt--)
-  // {
-  //   Serial.print("Sending cnt:");
-  //   Serial.println(cnt);
-  //   firebase.setString("Example/setString", "It's Working");
-  //   firebase.setInt("Example/setInt", num++);
-  //   firebase.setFloat("Example/setFloat", 45.32 + cnt);
-  //   delay(1000);
-  // }
-
-  //while(1);
-
-  //lcd_displayLongText();
-
+  //Display by context
   lcd_display_word();
-
-  //lcd_display();
-
-  // lcd.setCursor(0, 1);
-  // // print the number of seconds since reset:
-  // lcd.print(millis() / 1000);
-
-  // while(1){
-  //   lcd_test();
-  // }
-  //delay(2000);
 }
