@@ -10,6 +10,10 @@
 
 #define _SSID "Dell_Thomas"          // Your WiFi SSID
 #define _PASSWORD "123@123a"      // Your WiFi Password
+
+// #define _SSID "Thuytien"          // Your WiFi SSID
+// #define _PASSWORD "4372283361"      // Your WiFi Password
+
 #define REFERENCE_URL "https://vocabbuddy2024-default-rtdb.firebaseio.com"  // Your Firebase project reference url
 
 Firebase firebase(REFERENCE_URL);
@@ -123,6 +127,7 @@ int setup_wifi()
   WiFi.begin(_SSID, _PASSWORD);
 
   int timeoutCnt = 0;
+  int retryCnt = 0;
   //lcd_clear_line(0);
   lcd.clear();
   lcd_print_line(1,"Waiting for wifi");
@@ -131,9 +136,13 @@ int setup_wifi()
     delay(500);
     Serial.print("-");
     //lcd.scrollDisplayLeft();
-    
-    if (timeoutCnt++ > 360) //3 min
-      return 1;
+    if (timeoutCnt++ > 120)
+    {
+        WiFi.begin("Thuytien", "4372283361");
+        timeoutCnt = 0;
+        if(retryCnt ++ > 3)
+          return 1;
+    }
   }
 
   Serial.println("");
@@ -296,13 +305,6 @@ void lcd_display()
       //lcd_print_line(1, psCurVocabSet[cnt].pronunciation);      //Challenge: special characters
       //partOfSpech
 
-// #define BUFF_MAX_LEN_WORD					      32
-// #define BUFF_MAX_LEN_PARTOFSPECH			  8
-// #define BUFF_MAX_LEN_PRONUNCIATION			32
-// #define BUFF_MAX_LEN_TRANSLATION			  32
-// #define BUFF_MAX_LEN_DEFINITIONS			  96
-// #define BUFF_MAX_LEN_COMMON_PHRASES			96
-
       char pUnAccentDefintion[BUFF_MAX_LEN_DEFINITIONS]; 
       convert_to_unaccented((char*)psCurVocabSet[cnt].definitions, pUnAccentDefintion);
       printDbg(pUnAccentDefintion);
@@ -344,11 +346,17 @@ void lcd_display()
 
       delay(3000);
       lcd.clear();
+      delay(2000);
     }
   }
 
   printDbg("lcd_display_end");
 }
+
+// The message to scroll
+//const char *longText = "This is a very long text that needs to scroll on a 16x2 LCD screen!";
+const char *longText;
+int gPosition = 0; // Tracks the current position of the text
 
 void lcd_display_word()
 {
@@ -367,14 +375,15 @@ void lcd_display_word()
 
       //Serial.print("received_partOfSpeech:\t\t");
       Serial.println(psCurVocabSet[cnt].pronunciation);
-
+      //=================================================
       //LCD - scene 1
       //line 0
       lcd_print_line(0, psCurVocabSet[cnt].word);
+      int len = strlen(psCurVocabSet[cnt].word);
 
       //line 1
       char unAccentTranslationBuff[BUFF_MAX_LEN_TRANSLATION]; 
-      memset(unAccentTranslationBuff, 'A', sizeof(unAccentTranslationBuff) - 1);
+      memset(unAccentTranslationBuff, 0x00 , sizeof(unAccentTranslationBuff) - 1);
 
       printDbg("Before:");
       printDbg(psCurVocabSet[cnt].translation);
@@ -385,7 +394,69 @@ void lcd_display_word()
 
       lcd_print_line(1, unAccentTranslationBuff);   
 
-      delay(3000);
+      delay(5000);
+      lcd.clear();
+
+      //=================================================
+      //LCD - scene 2
+      //line 0
+      // lcd_print_line(0, psCurVocabSet[cnt].definitions);
+      // delay(1000);
+      len = strlen(psCurVocabSet[cnt].definitions);
+
+      printDbg("definitions len:");
+      Serial.print(len);
+
+      if( len < 16)
+      {
+        lcd_print_line(0, psCurVocabSet[cnt].definitions);
+        delay(1000);
+    
+      }else if ( len >= 16 && len <= 40)
+      {
+        lcd_print_line(0, psCurVocabSet[cnt].definitions);
+        delay(1000); 
+
+        for (int positionCounter = 0; positionCounter < len-16; positionCounter++) 
+        {
+          // scroll one position left:
+          lcd.scrollDisplayLeft();
+          // wait a bit:
+          delay(400);
+        }
+      }
+      else
+      {
+        longText = psCurVocabSet[cnt].definitions;
+        gPosition = 0; // Tracks the current position of the text
+        lcd_displayLongText(); 
+      }
+
+      delay(1000);
+      lcd.clear();
+
+      //=================================================
+      //LCD - scene 3
+      //line 0
+      lcd_print_line(0, psCurVocabSet[cnt].commonPhrases);
+      delay(1000);
+      len = strlen(psCurVocabSet[cnt].commonPhrases);
+
+      printDbg("commonPhrases len:");
+      Serial.print(len);
+
+      if( len > 16)
+      {
+        for (int positionCounter = 0; positionCounter < len - 16; positionCounter++) {
+          // scroll one position left:
+          lcd.scrollDisplayLeft();
+          // wait a bit:
+          delay(300);
+        }
+      }
+
+      //line 1 
+      delay(1000);
       lcd.clear();
     }
   }
@@ -402,6 +473,39 @@ void lcd_test()
   delay(2000);
   lcd.clear();
 }
+
+bool isDatabaseUpdate()
+{
+  bool bRet = false;
+  return bRet;
+}
+
+void lcd_displayLongText() {
+  int len = strlen(longText);
+  do{
+    lcd.clear(); // Clear the display for the new text
+
+    // Print the next 16 characters starting at 'position' in the text
+    for (int i = 0; i < 16; i++) {
+      if ((gPosition + i) < strlen(longText)) { // Ensure we do not read past the string's end
+        lcd.setCursor(i, 0); // Set the cursor to column i, line 0
+        lcd.print(longText[gPosition + i]); // Print the character at 'gPosition + i'
+      }
+    }
+
+    gPosition++; // Move the starting position right for the next frame of text
+
+    // If the end of the message is reached, reset to start
+    if (gPosition + 16 > strlen(longText)) {
+      gPosition = 0; // Reset position to the start
+      delay(1500); // Optional: wait a bit before restarting the scroll
+      break;
+    }
+
+    delay(500); // Delay for text scrolling speed
+  }while(gPosition < len);
+}
+
 void loop() {
   // // Nothing
   //   // Write some data to the realtime database.
@@ -418,7 +522,11 @@ void loop() {
   // }
 
   //while(1);
+
+  //lcd_displayLongText();
+
   lcd_display_word();
+
   //lcd_display();
 
   // lcd.setCursor(0, 1);
