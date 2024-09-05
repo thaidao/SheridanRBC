@@ -1,0 +1,22 @@
+{
+  "set_1": [
+    {
+      "word": "plagiarism",
+      "part_of_speech": "n",
+      "pronunciation": "ˈpleɪdʒərɪzəm",
+      "translation": "đạo văn",
+      "definitions": "The practice of taking someone else's work or ideas and passing them off as one's own.",
+      "common_phrases": "commit plagiarism",
+      "notes": "Plagiarism is considered unethical and is punishable in academic and professional contexts."
+    },
+    {
+      "word": "grumpy",
+      "part_of_speech": "adj",
+      "pronunciation": "ˈɡrʌmpi",
+      "translation": "cáu kỉnh",
+      "definitions": "Bad-tempered and irritable.",
+      "common_phrases": "feel grumpy",
+      "notes": "People often feel grumpy when they are tired or hungry."
+    }
+  ]
+}

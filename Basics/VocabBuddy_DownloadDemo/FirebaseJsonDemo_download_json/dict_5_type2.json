@@ -1,0 +1,49 @@
+{
+  "set_1": [
+    {
+      "word": "suburb",
+      "part_of_speech": "n",
+      "pronunciation": "ˈsʌbɜːb",
+      "translation": "vùng ngoại ô",
+      "definitions": "An outlying district of a city, especially a residential one.",
+      "common_phrases": "live in the suburb",
+      "notes": "Suburbs are typically quieter than the inner city."
+    },
+    {
+      "word": "pungent",
+      "part_of_speech": "adj",
+      "pronunciation": "ˈpʌndʒənt",
+      "translation": "hăng, cay",
+      "definitions": "Having a sharply strong taste or smell.",
+      "common_phrases": "pungent smell",
+      "notes": "Pungent odors are often associated with spices or strong chemicals."
+    },
+    {
+      "word": "errand",
+      "part_of_speech": "n",
+      "pronunciation": "ˈɛrənd",
+      "translation": "việc vặt",
+      "definitions": "A short journey undertaken in order to deliver or collect something.",
+      "common_phrases": "run an errand",
+      "notes": "Errands are typically quick tasks like going to the store or picking up mail."
+    },
+    {
+      "word": "indulge",
+      "part_of_speech": "v",
+      "pronunciation": "ɪnˈdʌldʒ",
+      "translation": "nuông chiều, tự thưởng",
+      "definitions": "Allow oneself to enjoy the pleasure of something.",
+      "common_phrases": "indulge in dessert",
+      "notes": "Indulging is often linked to treating oneself to something enjoyable, like food or rest."
+    },
+    {
+      "word": "intact",
+      "part_of_speech": "adj",
+      "pronunciation": "ɪnˈtækt",
+      "translation": "nguyên vẹn",
+      "definitions": "Not damaged or impaired in any way; complete.",
+      "common_phrases": "remain intact",
+      "notes": "Intact is used to describe something that is whole and unharmed."
+    }
+  ]
+}
