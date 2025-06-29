@@ -18,11 +18,11 @@ Servo servo_3; // servo object representing the MG 996R servo
 Servo servo_4; // servo object representing the MG 996R servo
 
 // define the motor control pin
-#define SVM_CTR_0 2 // servo is wired to Arduino on digital pin 2
-#define SVM_CTR_1 3 // init angle 180
-#define SVM_CTR_2 4
-#define SVM_CTR_3 5
-#define SVM_CTR_4 6
+#define SVM_CTR_0 2 //base // servo is wired to Arduino on digital pin 2
+#define SVM_CTR_1 3 //shoulder // init angle 180
+#define SVM_CTR_2 4 //elbow
+#define SVM_CTR_3 5 //wrist
+#define SVM_CTR_4 6 //gripper
 
 // define the motor index
 #define SVM_0 0 
@@ -278,16 +278,17 @@ void svm_init_state()
 
 void svm_selftest_simple()
 {
-  svm_table[SVM_0]->write(0);
-  delay(1000);
+  Serial.println("svm_selftest_simple");
+  // svm_table[SVM_0]->write(0);
+  // delay(1000);
   svm_table[SVM_1]->write(0);
   delay(1000);
-  svm_table[SVM_2]->write(0);
-  delay(1000);
-  svm_table[SVM_3]->write(0);
-  delay(1000);
-  svm_table[SVM_4]->write(0);
-  delay(1000);
+  // svm_table[SVM_2]->write(0);
+  // delay(1000);
+  // svm_table[SVM_3]->write(0);
+  // delay(1000);
+  // svm_table[SVM_4]->write(0);
+  // delay(1000);
 }
 
 //Self rotate all motor from zero to 180 degree
@@ -326,8 +327,11 @@ void loop()
 //   svm_ctr_rotate(SVM_0,0,50,100);
 //   delay(1000);
 // }
+
   //Init state
-  svm_init_state();
+  //svm_init_state();
+
+  svm_selftest_simple();
 
   //Set all intial angle of servo are zero
   //svm_selftest_simple();

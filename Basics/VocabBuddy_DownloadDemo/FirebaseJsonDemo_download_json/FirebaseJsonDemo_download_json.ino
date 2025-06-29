@@ -211,7 +211,7 @@ void setup() {
   setup_serial();
 
   //Set up wifi
-  ret = setup_wifi();
+  ret = 0;//setup_wifi();
   if(ret)
   {
     lcd_print_line(1,"Resetting wifi");
@@ -224,10 +224,10 @@ void setup() {
   setup_lcd();
 
   //Set up display mode
-  setup_displayMode();
+  //setup_displayMode();
 
   //synchronize with database
-  sync_database();
+  //sync_database();
 
 }
 
@@ -552,6 +552,22 @@ void lcd_display_word_optimized() {
 
 //Main looo
 void loop() {
+  while(1)
+  {
+    lcd.setCursor(0, 1);
+    lcd.clear();
+    lcd.print("Have a nice day");
+    lcd.setCursor(1, 1);
+    lcd.print("How are you?");
+    delay(2000);
+
+    lcd.setCursor(0, 1);
+    lcd.clear();
+    lcd.print("Welcome to");
+    lcd.setCursor(1, 1);
+    lcd.print("Robotic Club ^^");
+    delay(2000);    
+  }
   //Display by context
   lcd_display_word();
 
