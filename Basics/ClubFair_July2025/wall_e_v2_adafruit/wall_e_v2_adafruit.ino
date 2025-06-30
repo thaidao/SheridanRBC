@@ -49,7 +49,7 @@ uint8_t servonum = 0;
 #define MT_RIGHT_ARM_INIT_ANGLE  0     //wave right arm
 #define MT_LEFT_ARM_INIT_ANGLE   0
 #define MT_NECK_ROT_INIT_ANGLE   90     //rotate a neck
-#define MT_NECK_NOD_INIT_ANGLE   0     //nod
+#define MT_NECK_NOD_INIT_ANGLE   45     //nod
 
 void rb_init_position();
 void mt_rot_degrees(int mtIdx, int degrees);
@@ -151,27 +151,32 @@ void rb_init_position()
   mt_rot_degrees(MT_RIGHT_ARM,0);
   mt_rot_degrees(MT_LEFT_ARM,0);
   mt_rot_degrees(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE); //90
-  mt_rot_degrees(MT_NECK_NOD,0);  
+  mt_rot_degrees(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE); //45  
 }
 
 //Run all motors
 void rb_self_test()
 {
-  mt_rot_degrees(MT_RIGHT_ARM,120);   //down from 180 to 120 due to hardware limitation
-  mt_rot_degrees(MT_LEFT_ARM,120);    //when the hands are moving over 150, it will be stucked by its head=>make motor broken
+  // mt_rot_degrees(MT_RIGHT_ARM,120);   //down from 180 to 120 due to hardware limitation
+  // mt_rot_degrees(MT_LEFT_ARM,120);    //when the hands are moving over 150, it will be stucked by its head=>make motor broken
   
-  //Rotate left and right
-  //mt_rot_degrees(MT_NECK_ROT,0);
-  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,0,20);
+  // //Rotate left and right
+  // //mt_rot_degrees(MT_NECK_ROT,0);
+  // mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,0,20);
 
-  delay(750);
-  //mt_rot_degrees(MT_NECK_ROT,180);
-  mt_rot_degrees_speed(MT_NECK_ROT,0,180,10);
-  delay(750);
+  // delay(750);
+  // //mt_rot_degrees(MT_NECK_ROT,180);
+  // mt_rot_degrees_speed(MT_NECK_ROT,0,180,10);
+  // delay(750);
 
-  //@todo cui dau, ngang dau
-  mt_rot_degrees(MT_NECK_NOD,180); 
-  delay(1000);
+  //head down 
+  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_ROT_INIT_ANGLE,0,20);
+  //while(1);
+  delay(750);
+  //head up
+  mt_rot_degrees_speed(MT_NECK_NOD,0,90,20);
+  delay(750);
+  //while(1);
 
   //back to intial state
   rb_init_position(); 
@@ -235,13 +240,13 @@ void loop() {
   //while(1);
 
   //Do self test
-  //rb_self_test();
+  rb_self_test();
 
   //Wave arm
   //rb_wave_arm();
 
   //Show happy mode
-  rb_happy();
+  //rb_happy();
 
   //Stop loop for testing
   while(1);
