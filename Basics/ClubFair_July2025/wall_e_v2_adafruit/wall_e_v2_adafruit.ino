@@ -31,8 +31,8 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // want these to be as small/large as possible without hitting the hard stop
 // for max range. You'll have to tweak them as necessary to match the servos you
 // have!
-#define SERVOMIN  150 // This is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  600 // This is the 'maximum' pulse length count (out of 4096)
+#define SERVOMIN  100 // This is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  450 // This is the 'maximum' pulse length count (out of 4096)
 #define USMIN  600 // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
 #define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
@@ -134,8 +134,45 @@ void rb_wave_arm()
   }
   delay(500);
 }
+//pulselength = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
+
+void mt_rot_degrees(int mtIdx, int degrees)
+{
+  int pulselen = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
+  pwm.setPWM(mtIdx, 0, pulselen);
+
+}
 
 void loop() {
+// while(1){
+//     pwm.setPWM(0, 0, 100);
+//     delay(1000);
+//     pwm.setPWM(0, 0, 450);
+//     delay(1000);
+// }
+//     while(1);
+while(1)
+{
+  mt_rot_degrees(MT_RIGHT_ARM,0);
+  mt_rot_degrees(MT_LEFT_ARM,0);
+  delay(1000);
+  //while(1);
+  mt_rot_degrees(MT_RIGHT_ARM,45);
+  mt_rot_degrees(MT_LEFT_ARM,45);
+  delay(1000);
+  mt_rot_degrees(MT_RIGHT_ARM,90);
+  mt_rot_degrees(MT_LEFT_ARM,90);
+  delay(1000);
+  mt_rot_degrees(MT_RIGHT_ARM,135);
+  mt_rot_degrees(MT_LEFT_ARM,135);
+  delay(1000);
+  mt_rot_degrees(MT_RIGHT_ARM,180);
+  mt_rot_degrees(MT_LEFT_ARM,180);
+  delay(1000);
+  // pwm.setPWM(0, 0, 450);
+  // delay(1000);
+
+}
 
   rb_init_position();
 
