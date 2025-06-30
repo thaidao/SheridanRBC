@@ -138,6 +138,9 @@ void rb_wave_arm()
 
 void mt_rot_degrees(int mtIdx, int degrees)
 {
+  if(mtIdx == MT_LEFT_ARM)
+    degrees = 180 - degrees;
+
   int pulselen = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
   pwm.setPWM(mtIdx, 0, pulselen);
 
@@ -150,13 +153,13 @@ void loop() {
 //     pwm.setPWM(0, 0, 450);
 //     delay(1000);
 // }
-//     while(1);
+//while(1);
 while(1)
 {
   mt_rot_degrees(MT_RIGHT_ARM,0);
   mt_rot_degrees(MT_LEFT_ARM,0);
   delay(1000);
-  //while(1);
+  while(1);
   mt_rot_degrees(MT_RIGHT_ARM,45);
   mt_rot_degrees(MT_LEFT_ARM,45);
   delay(1000);
