@@ -45,8 +45,15 @@ uint8_t servonum = 0;
 #define MT_NECK_ROT   2     //rotate a neck
 #define MT_NECK_NOD   3     //nod
 
+//Init angle
+#define MT_RIGHT_ARM_INIT_ANGLE  0     //wave right arm
+#define MT_LEFT_ARM_INIT_ANGLE   0
+#define MT_NECK_ROT_INIT_ANGLE   90     //rotate a neck
+#define MT_NECK_NOD_INIT_ANGLE   0     //nod
+
 void rb_init_position();
 void mt_rot_degrees(int mtIdx, int degrees);
+void mt_rot_degrees_speed(int mtIdx, int start_degree, int stop_degree, int delay_time); 
 
 void setup() {
   Serial.begin(9600);
@@ -97,7 +104,7 @@ void rb_init_position()
 {
   mt_rot_degrees(MT_RIGHT_ARM,0);
   mt_rot_degrees(MT_LEFT_ARM,0);
-  mt_rot_degrees(MT_NECK_ROT,90);
+  mt_rot_degrees(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE); //90
   mt_rot_degrees(MT_NECK_NOD,0);
 
   // //right arm
@@ -113,14 +120,17 @@ void rb_init_position()
 
 void rb_self_test()
 {
-  mt_rot_degrees(MT_RIGHT_ARM,180);
-  mt_rot_degrees(MT_LEFT_ARM,180);
+  mt_rot_degrees(MT_RIGHT_ARM,120);   //down from 180 to 120 due to hardware limitation
+  mt_rot_degrees(MT_LEFT_ARM,120);    //when the hands are moving over 150, it will be stucked by its head=>make motor broken
   
   //Rotate left and right
-  mt_rot_degrees(MT_NECK_ROT,0);
-  delay(1000);
-  mt_rot_degrees(MT_NECK_ROT,180);
-  delay(1000);
+  //mt_rot_degrees(MT_NECK_ROT,0);
+  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,0,20);
+
+  delay(750);
+  //mt_rot_degrees(MT_NECK_ROT,180);
+  mt_rot_degrees_speed(MT_NECK_ROT,0,180,10);
+  delay(750);
 
   //@todo cui dau, ngang dau
   mt_rot_degrees(MT_NECK_NOD,180); 
@@ -163,14 +173,33 @@ void rb_wave_arm()
 }
 //pulselength = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
 
-void mt_rot_degrees(int mtIdx, int degrees)
+void mt_rot_degrees(int mtIdx, int degrees) //absolute degree from 0 to 180
 {
   if(mtIdx == MT_LEFT_ARM)
     degrees = 180 - degrees;
 
   int pulselen = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
   pwm.setPWM(mtIdx, 0, pulselen);
+}
 
+void mt_rot_degrees_speed(int mtIdx, int start_degree, int stop_degree, int delay_time)
+{
+  if(stop_degree>= start_degree)
+  {
+    for(int degrees = start_degree;degrees <= stop_degree; degrees ++)
+    {
+      mt_rot_degrees(mtIdx, degrees);
+      delay(delay_time);
+    }
+  }
+  else
+  {
+    for(int degrees = start_degree;degrees >= stop_degree; degrees --)
+    {
+      mt_rot_degrees(mtIdx, degrees);
+      delay(delay_time);
+    }
+  }
 }
 
 void loop() {
