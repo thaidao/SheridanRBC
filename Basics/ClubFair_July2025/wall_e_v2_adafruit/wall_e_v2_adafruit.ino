@@ -100,6 +100,19 @@ void setServoPulse(uint8_t n, double pulse) {
   pwm.setPWM(n, 0, pulse);
 }
 
+const int mt_info[4][2] = 
+{
+  {MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE},
+  {MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE},
+  {MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE},
+  {MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE},
+};
+
+void mt_init_position(int mtIdx)
+{
+  mt_rot_degrees(mtIdx, mt_info[mtIdx][1]);
+}
+
 void rb_init_position()
 {
   mt_rot_degrees(MT_RIGHT_ARM,0);
@@ -151,27 +164,16 @@ void rb_wave_arm()
   //wave 3 times
   while(wave_cnt--)
   {
-    for (uint16_t pulselen = SERVOMAX-100; pulselen > SERVOMAX-400; pulselen--) {
-    pwm.setPWM(MT_RIGHT_ARM, 0, pulselen);
-    //delay(100);
-    }
-
-    for (uint16_t pulselen = SERVOMAX-400; pulselen < SERVOMAX-100; pulselen++) {
-    pwm.setPWM(MT_RIGHT_ARM, 0, pulselen);
+    mt_rot_degrees_speed(MT_RIGHT_ARM,75,135,5);
+    mt_rot_degrees_speed(MT_RIGHT_ARM,135,75,5);
   }
-
-    //delay(1000);
-  }
-
-  delay(500);
 
   //arm down
-  for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
-  pwm.setPWM(MT_RIGHT_ARM, 0, pulselen);
-  }
+  mt_rot_degrees_speed(MT_RIGHT_ARM,75,MT_RIGHT_ARM_INIT_ANGLE,5);
+  //mt_init_position(MT_RIGHT_ARM);
+
   delay(500);
 }
-//pulselength = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
 
 void mt_rot_degrees(int mtIdx, int degrees) //absolute degree from 0 to 180
 {
@@ -204,7 +206,9 @@ void mt_rot_degrees_speed(int mtIdx, int start_degree, int stop_degree, int dela
 
 void loop() {
   //while(1);
-  rb_self_test();
+  //rb_self_test();
+
+  rb_wave_arm();
 // while(1){
 //     pwm.setPWM(0, 0, 100);
 //     delay(1000);
