@@ -197,77 +197,52 @@ void rb_wave_arm()
 
 void rb_happy()
 {
+  int wave_cnt = 3;
+  int start_degree = 60;
+  int stop_degree = 135;
+  int sum_degree = start_degree +  stop_degree;
+
+  //wave 3 times
+  while(wave_cnt--)
+  {
+
+    //Two arm move revertly
+    for(int degrees = start_degree;degrees <= stop_degree; degrees ++)
+    {
+      mt_rot_degrees(MT_RIGHT_ARM, degrees);
+      mt_rot_degrees(MT_LEFT_ARM, sum_degree - degrees);
+
+      //@todo nod
+      delay(5);
+    }
+    delay(10);
+  }
+
+  //Two hand down
+  rb_init_position();
+
+}
+
+//Read sonar sensor when rotate neck, look around
+//If detect something, say fun world, do arm gesture
+void rb_suveilance()
+{
 
 }
 
 void loop() {
+  //Stop robot temporally
   //while(1);
+
+  //Do self test
   //rb_self_test();
 
-  rb_wave_arm();
-// while(1){
-//     pwm.setPWM(0, 0, 100);
-//     delay(1000);
-//     pwm.setPWM(0, 0, 450);
-//     delay(1000);
-// }
-//while(1);
-while(1)
-{
-  mt_rot_degrees(MT_RIGHT_ARM,0);
-  mt_rot_degrees(MT_LEFT_ARM,0);
-  delay(1000);
+  //Wave arm
+  //rb_wave_arm();
+
+  //Show happy mode
+  rb_happy();
+
+  //Stop loop for testing
   while(1);
-  mt_rot_degrees(MT_RIGHT_ARM,45);
-  mt_rot_degrees(MT_LEFT_ARM,45);
-  delay(1000);
-  mt_rot_degrees(MT_RIGHT_ARM,90);
-  mt_rot_degrees(MT_LEFT_ARM,90);
-  delay(1000);
-  mt_rot_degrees(MT_RIGHT_ARM,135);
-  mt_rot_degrees(MT_LEFT_ARM,135);
-  delay(1000);
-  mt_rot_degrees(MT_RIGHT_ARM,180);
-  mt_rot_degrees(MT_LEFT_ARM,180);
-  delay(1000);
-  // pwm.setPWM(0, 0, 450);
-  // delay(1000);
-
-}
-
-  rb_init_position();
-
-  rb_wave_arm();
-
-  while(1);
-  // Drive each servo one at a time using setPWM()
-  Serial.println(servonum);
-  for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
-    pwm.setPWM(servonum, 0, pulselen);
-  }
-  
-  delay(500);
-  for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
-    pwm.setPWM(servonum, 0, pulselen);
-  }
-
-  while(1);
-
-  delay(500);
-
-  // Drive each servo one at a time using writeMicroseconds(), it's not precise due to calculation rounding!
-  // The writeMicroseconds() function is used to mimic the Arduino Servo library writeMicroseconds() behavior. 
-  for (uint16_t microsec = USMIN; microsec < USMAX; microsec++) {
-    pwm.writeMicroseconds(servonum, microsec);
-  }
-
-  delay(500);
-  for (uint16_t microsec = USMAX; microsec > USMIN; microsec--) {
-    pwm.writeMicroseconds(servonum, microsec);
-  }
-
-  delay(500);
-
-  servonum++;
-  if (servonum > 4) servonum = 0; // Testing the first 8 servo channels
 }
