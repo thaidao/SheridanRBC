@@ -55,6 +55,14 @@ void rb_init_position();
 void mt_rot_degrees(int mtIdx, int degrees);
 void mt_rot_degrees_speed(int mtIdx, int start_degree, int stop_degree, int delay_time); 
 
+const int mt_info[4][2] = 
+{
+  {MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE},
+  {MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE},
+  {MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE},
+  {MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE},
+};
+
 void setup() {
   Serial.begin(9600);
   Serial.println("8 channel Servo test!");
@@ -100,37 +108,53 @@ void setServoPulse(uint8_t n, double pulse) {
   pwm.setPWM(n, 0, pulse);
 }
 
-const int mt_info[4][2] = 
+//motor rotate to absolute angle
+void mt_rot_degrees(int mtIdx, int degrees) //absolute degree from 0 to 180
 {
-  {MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE},
-  {MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE},
-  {MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE},
-  {MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE},
-};
+  if(mtIdx == MT_LEFT_ARM)
+    degrees = 180 - degrees;
 
+  int pulselen = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
+  pwm.setPWM(mtIdx, 0, pulselen);
+}
+
+//Control the speed of motor rotation
+void mt_rot_degrees_speed(int mtIdx, int start_degree, int stop_degree, int delay_time)
+{
+  if(stop_degree>= start_degree)
+  {
+    for(int degrees = start_degree;degrees <= stop_degree; degrees ++)
+    {
+      mt_rot_degrees(mtIdx, degrees);
+      delay(delay_time);
+    }
+  }
+  else
+  {
+    for(int degrees = start_degree;degrees >= stop_degree; degrees --)
+    {
+      mt_rot_degrees(mtIdx, degrees);
+      delay(delay_time);
+    }
+  }
+}
+
+//Motor init state
 void mt_init_position(int mtIdx)
 {
   mt_rot_degrees(mtIdx, mt_info[mtIdx][1]);
 }
 
+//Robot init state
 void rb_init_position()
 {
   mt_rot_degrees(MT_RIGHT_ARM,0);
   mt_rot_degrees(MT_LEFT_ARM,0);
   mt_rot_degrees(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE); //90
-  mt_rot_degrees(MT_NECK_NOD,0);
-
-  // //right arm
-  //   for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
-  //   pwm.setPWM(MT_RIGHT_ARM, 0, pulselen);
-  // }
-
-  // //lef arm
-  // for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
-  //   pwm.setPWM(MT_LEFT_ARM, 0, pulselen);
-  // }  
+  mt_rot_degrees(MT_NECK_NOD,0);  
 }
 
+//Run all motors
 void rb_self_test()
 {
   mt_rot_degrees(MT_RIGHT_ARM,120);   //down from 180 to 120 due to hardware limitation
@@ -153,13 +177,10 @@ void rb_self_test()
   rb_init_position(); 
 }
 
+//Wave arm
 void rb_wave_arm()
 {
   int wave_cnt = 3;
-
-  // for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX-100; pulselen++) {
-  //   pwm.setPWM(MT_RIGHT_ARM, 0, pulselen);
-  // }
 
   //wave 3 times
   while(wave_cnt--)
@@ -171,37 +192,12 @@ void rb_wave_arm()
   //arm down
   mt_rot_degrees_speed(MT_RIGHT_ARM,75,MT_RIGHT_ARM_INIT_ANGLE,5);
   //mt_init_position(MT_RIGHT_ARM);
-
-  delay(500);
+  //delay(500);
 }
 
-void mt_rot_degrees(int mtIdx, int degrees) //absolute degree from 0 to 180
+void rb_happy()
 {
-  if(mtIdx == MT_LEFT_ARM)
-    degrees = 180 - degrees;
 
-  int pulselen = map(degrees, 0, 180, SERVOMIN, SERVOMAX);
-  pwm.setPWM(mtIdx, 0, pulselen);
-}
-
-void mt_rot_degrees_speed(int mtIdx, int start_degree, int stop_degree, int delay_time)
-{
-  if(stop_degree>= start_degree)
-  {
-    for(int degrees = start_degree;degrees <= stop_degree; degrees ++)
-    {
-      mt_rot_degrees(mtIdx, degrees);
-      delay(delay_time);
-    }
-  }
-  else
-  {
-    for(int degrees = start_degree;degrees >= stop_degree; degrees --)
-    {
-      mt_rot_degrees(mtIdx, degrees);
-      delay(delay_time);
-    }
-  }
 }
 
 void loop() {
