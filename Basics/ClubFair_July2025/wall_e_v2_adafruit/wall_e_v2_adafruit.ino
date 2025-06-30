@@ -159,23 +159,31 @@ void rb_self_test()
 {
   // mt_rot_degrees(MT_RIGHT_ARM,120);   //down from 180 to 120 due to hardware limitation
   // mt_rot_degrees(MT_LEFT_ARM,120);    //when the hands are moving over 150, it will be stucked by its head=>make motor broken
-  
-  // //Rotate left and right
-  // //mt_rot_degrees(MT_NECK_ROT,0);
-  // mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,0,20);
+  // delay(1000);
+  // mt_init_position(MT_RIGHT_ARM);
+  // mt_init_position(MT_LEFT_ARM);
 
-  // delay(750);
-  // //mt_rot_degrees(MT_NECK_ROT,180);
-  // mt_rot_degrees_speed(MT_NECK_ROT,0,180,10);
-  // delay(750);
+  //Test 2 arms up and down
+  mt_rot_degrees_speed(MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE,45,10);
+  mt_rot_degrees_speed(MT_RIGHT_ARM,45,MT_RIGHT_ARM_INIT_ANGLE,10);
+
+  mt_rot_degrees_speed(MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE,45,10);
+  mt_rot_degrees_speed(MT_LEFT_ARM,45,MT_LEFT_ARM_INIT_ANGLE,10);
+
+  //Rotate head to left and right
+  //mt_rot_degrees(MT_NECK_ROT,0);
+  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,0,10);
+  //delay(750);
+  mt_rot_degrees_speed(MT_NECK_ROT,0,180,10);
+  //delay(750);
+  mt_rot_degrees_speed(MT_NECK_ROT,180,MT_NECK_ROT_INIT_ANGLE,10);
+  delay(750);
 
   //head down 
-  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_ROT_INIT_ANGLE,0,20);
-  //while(1);
-  delay(750);
-  //head up
-  mt_rot_degrees_speed(MT_NECK_NOD,0,90,20);
-  delay(750);
+  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE,0,10);
+  //delay(750);
+  mt_rot_degrees_speed(MT_NECK_NOD,0,90,10);
+  //delay(750);
   //while(1);
 
   //back to intial state
