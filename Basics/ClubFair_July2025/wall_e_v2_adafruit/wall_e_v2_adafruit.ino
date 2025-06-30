@@ -46,6 +46,7 @@ uint8_t servonum = 0;
 #define MT_NECK_NOD   3     //nod
 
 void rb_init_position();
+void mt_rot_degrees(int mtIdx, int degrees);
 
 void setup() {
   Serial.begin(9600);
@@ -72,6 +73,8 @@ void setup() {
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
 
   delay(10);
+
+  rb_init_position();
 }
 
 // You can use this function if you'd like to set the pulse length in seconds
@@ -92,15 +95,39 @@ void setServoPulse(uint8_t n, double pulse) {
 
 void rb_init_position()
 {
-  //right arm
-    for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
-    pwm.setPWM(MT_RIGHT_ARM, 0, pulselen);
-  }
+  mt_rot_degrees(MT_RIGHT_ARM,0);
+  mt_rot_degrees(MT_LEFT_ARM,0);
+  mt_rot_degrees(MT_NECK_ROT,90);
+  mt_rot_degrees(MT_NECK_NOD,0);
 
-  //lef arm
-  for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
-    pwm.setPWM(MT_LEFT_ARM, 0, pulselen);
-  }  
+  // //right arm
+  //   for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
+  //   pwm.setPWM(MT_RIGHT_ARM, 0, pulselen);
+  // }
+
+  // //lef arm
+  // for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
+  //   pwm.setPWM(MT_LEFT_ARM, 0, pulselen);
+  // }  
+}
+
+void rb_self_test()
+{
+  mt_rot_degrees(MT_RIGHT_ARM,180);
+  mt_rot_degrees(MT_LEFT_ARM,180);
+  
+  //Rotate left and right
+  mt_rot_degrees(MT_NECK_ROT,0);
+  delay(1000);
+  mt_rot_degrees(MT_NECK_ROT,180);
+  delay(1000);
+
+  //@todo cui dau, ngang dau
+  mt_rot_degrees(MT_NECK_NOD,180); 
+  delay(1000);
+
+  //back to intial state
+  rb_init_position(); 
 }
 
 void rb_wave_arm()
@@ -147,6 +174,8 @@ void mt_rot_degrees(int mtIdx, int degrees)
 }
 
 void loop() {
+  //while(1);
+  rb_self_test();
 // while(1){
 //     pwm.setPWM(0, 0, 100);
 //     delay(1000);
