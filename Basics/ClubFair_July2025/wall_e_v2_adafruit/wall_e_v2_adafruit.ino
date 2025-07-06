@@ -54,6 +54,10 @@ uint8_t servonum = 0;
 void rb_init_position();
 void mt_rot_degrees(int mtIdx, int degrees);
 void mt_rot_degrees_speed(int mtIdx, int start_degree, int stop_degree, int delay_time); 
+void mt_self_test();
+
+//led
+void led_test() ;
 
 const int mt_info[4][2] = 
 {
@@ -63,9 +67,16 @@ const int mt_info[4][2] =
   {MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE},
 };
 
+#define LED_RIGHT_EYE_PIN	6
+#define LED_LEFT_EYE_PIN	7
+
 void setup() {
   Serial.begin(9600);
-  Serial.println("8 channel Servo test!");
+  Serial.println("Wall-E ...!");
+
+  //Pin out for LEDs
+  pinMode(LED_RIGHT_EYE_PIN, OUTPUT);
+  pinMode(LED_LEFT_EYE_PIN, OUTPUT);
 
   pwm.begin();
   /*
@@ -159,7 +170,7 @@ void rb_init_position()
 }
 
 //Run all motors
-void rb_self_test()
+void mt_self_test()
 {
   // mt_rot_degrees(MT_RIGHT_ARM,120);   //down from 180 to 120 due to hardware limitation
   // mt_rot_degrees(MT_LEFT_ARM,120);    //when the hands are moving over 150, it will be stucked by its head=>make motor broken
@@ -180,19 +191,19 @@ void rb_self_test()
 
   //Rotate head to left and right
   //mt_rot_degrees(MT_NECK_ROT,0);
-  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,0,10);
+  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,0,15);
   //delay(750);
   mt_rot_degrees_speed(MT_NECK_ROT,0,180,10);
   //delay(750);
-  mt_rot_degrees_speed(MT_NECK_ROT,180,MT_NECK_ROT_INIT_ANGLE,10);
+  mt_rot_degrees_speed(MT_NECK_ROT,180,MT_NECK_ROT_INIT_ANGLE,15);
   delay(750);
 
   int cnt = 1;
   //head down 
   while(cnt--){
-  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE,50,15);
+  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE,120,15);
   //delay(750);
-  mt_rot_degrees_speed(MT_NECK_NOD,50,120,15);
+  mt_rot_degrees_speed(MT_NECK_NOD,120,MT_NECK_NOD_INIT_ANGLE,15);
   //delay(750);
   }
   //while(1);
@@ -253,11 +264,29 @@ void rb_suveilance()
 
 }
 
+void led_test() {
+  digitalWrite(LED_RIGHT_EYE_PIN, HIGH);  // turn the LED on (HIGH is the voltage level)
+  delay(500); 
+  digitalWrite(LED_RIGHT_EYE_PIN, LOW);   // turn the LED off by making the voltage LOW
+  
+  digitalWrite(LED_LEFT_EYE_PIN, HIGH);  // turn the LED on (HIGH is the voltage level)
+  delay(500);                      // wait for a second
+  digitalWrite(LED_LEFT_EYE_PIN, LOW);   // turn the LED off by making the voltage LOW 
+  delay(500);                      // wait for a second
+}
+
+void rb_self_test()
+{
+  led_test();
+
+  mt_self_test();
+} 
+
 void loop() {
   //Stop robot temporally
   //while(1);
 
-  rb_suveilance()
+  rb_suveilance();
 
   //Wave arm
   //rb_wave_arm();
