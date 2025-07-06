@@ -46,10 +46,10 @@ uint8_t servonum = 0;
 #define MT_NECK_NOD   3     //nod
 
 //Init angle
-#define MT_RIGHT_ARM_INIT_ANGLE  0     //wave right arm
-#define MT_LEFT_ARM_INIT_ANGLE   0
+#define MT_RIGHT_ARM_INIT_ANGLE  45     //wave right arm
+#define MT_LEFT_ARM_INIT_ANGLE   45
 #define MT_NECK_ROT_INIT_ANGLE   90     //rotate a neck
-#define MT_NECK_NOD_INIT_ANGLE   45     //nod
+#define MT_NECK_NOD_INIT_ANGLE   90     //nod
 
 void rb_init_position();
 void mt_rot_degrees(int mtIdx, int degrees);
@@ -90,6 +90,10 @@ void setup() {
   delay(10);
 
   rb_init_position();
+
+  //Do self test
+  rb_self_test();
+
 }
 
 // You can use this function if you'd like to set the pulse length in seconds
@@ -148,8 +152,8 @@ void mt_init_position(int mtIdx)
 //Robot init state
 void rb_init_position()
 {
-  mt_rot_degrees(MT_RIGHT_ARM,0);
-  mt_rot_degrees(MT_LEFT_ARM,0);
+  mt_rot_degrees(MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE);
+  mt_rot_degrees(MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE);
   mt_rot_degrees(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE); //90
   mt_rot_degrees(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE); //45  
 }
@@ -164,11 +168,15 @@ void rb_self_test()
   // mt_init_position(MT_LEFT_ARM);
 
   //Test 2 arms up and down
-  mt_rot_degrees_speed(MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE,45,10);
-  mt_rot_degrees_speed(MT_RIGHT_ARM,45,MT_RIGHT_ARM_INIT_ANGLE,10);
+  mt_rot_degrees_speed(MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE,90,20);
+  mt_rot_degrees_speed(MT_RIGHT_ARM,90,MT_RIGHT_ARM_INIT_ANGLE,20);
 
-  mt_rot_degrees_speed(MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE,45,10);
-  mt_rot_degrees_speed(MT_LEFT_ARM,45,MT_LEFT_ARM_INIT_ANGLE,10);
+  mt_rot_degrees_speed(MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE,90,20);
+  mt_rot_degrees_speed(MT_LEFT_ARM,90,MT_LEFT_ARM_INIT_ANGLE,20);
+
+  //mt_rot_degrees_speed(MT_LEFT_ARM,45,120,15);
+  //mt_rot_degrees_speed(MT_LEFT_ARM,120,45,15);
+  //while(1);
 
   //Rotate head to left and right
   //mt_rot_degrees(MT_NECK_ROT,0);
@@ -179,11 +187,14 @@ void rb_self_test()
   mt_rot_degrees_speed(MT_NECK_ROT,180,MT_NECK_ROT_INIT_ANGLE,10);
   delay(750);
 
+  int cnt = 1;
   //head down 
-  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE,0,10);
+  while(cnt--){
+  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE,50,15);
   //delay(750);
-  mt_rot_degrees_speed(MT_NECK_NOD,0,90,10);
+  mt_rot_degrees_speed(MT_NECK_NOD,50,120,15);
   //delay(750);
+  }
   //while(1);
 
   //back to intial state
@@ -218,7 +229,6 @@ void rb_happy()
   //wave 3 times
   while(wave_cnt--)
   {
-
     //Two arm move revertly
     for(int degrees = start_degree;degrees <= stop_degree; degrees ++)
     {
@@ -230,7 +240,7 @@ void rb_happy()
     }
     delay(10);
   }
-
+ 
   //Two hand down
   rb_init_position();
 
@@ -247,8 +257,7 @@ void loop() {
   //Stop robot temporally
   //while(1);
 
-  //Do self test
-  rb_self_test();
+  rb_suveilance()
 
   //Wave arm
   //rb_wave_arm();
