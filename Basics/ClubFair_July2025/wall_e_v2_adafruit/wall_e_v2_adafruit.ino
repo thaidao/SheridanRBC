@@ -52,6 +52,9 @@ uint8_t servonum = 0;
 #define MT_NECK_NOD_INIT_ANGLE   90     //nod
 
 void rb_init_position();
+void rb_ready_state();
+void rb_eye_ctrl(int eye_pos,int eye_mode);
+
 void mt_rot_degrees(int mtIdx, int degrees);
 void mt_rot_degrees_speed(int mtIdx, int start_degree, int stop_degree, int delay_time); 
 void mt_self_test();
@@ -69,6 +72,12 @@ const int mt_info[4][2] =
 
 #define LED_RIGHT_EYE_PIN	6
 #define LED_LEFT_EYE_PIN	7
+
+#define EYE_CTRL_ON  HIGH
+#define EYE_CTRL_OFF LOW
+#define EYE_RIGHT 0
+#define EYE_LEFT  1
+#define EYE_ALL   2
 
 void setup() {
   Serial.begin(9600);
@@ -104,6 +113,8 @@ void setup() {
 
   //Do self test
   rb_self_test();
+
+  rb_ready_state();
 
 }
 
@@ -167,6 +178,12 @@ void rb_init_position()
   mt_rot_degrees(MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE);
   mt_rot_degrees(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE); //90
   mt_rot_degrees(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE); //45  
+}
+
+void rb_ready_state()
+{
+  rb_eye_ctrl(EYE_ALL,EYE_CTRL_ON);
+  rb_init_position();
 }
 
 //Run all motors
@@ -278,9 +295,27 @@ void led_test() {
 void rb_self_test()
 {
   led_test();
-
   mt_self_test();
-} 
+}
+
+void rb_eye_ctrl(int eye_pos,int eye_mode)
+{ 
+  switch(eye_pos)  
+  {
+    case EYE_RIGHT: //right
+      digitalWrite(LED_RIGHT_EYE_PIN, eye_mode);  // turn the LED on (HIGH is the voltage level)
+      break;
+    case EYE_LEFT: //left
+      digitalWrite(LED_LEFT_EYE_PIN, eye_mode);  // turn the LED on (HIGH is the voltage level)
+      break;
+    case EYE_ALL: //all
+      digitalWrite(LED_RIGHT_EYE_PIN, eye_mode);  // turn the LED on (HIGH is the voltage level)
+      digitalWrite(LED_LEFT_EYE_PIN, eye_mode);  // turn the LED on (HIGH is the voltage level)
+      break;
+    defautl:
+      break;
+  }
+}
 
 void loop() {
   //Stop robot temporally
