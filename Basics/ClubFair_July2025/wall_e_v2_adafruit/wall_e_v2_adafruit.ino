@@ -19,6 +19,7 @@
 
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <HCSR04.h>    //library: https://github.com/Martinsos/arduino-lib-hc-sr04
 
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
@@ -70,6 +71,9 @@ const int mt_info[4][2] =
   {MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE},
 };
 
+//Define IO
+#define SONAR_TRIGGER_PIN 4
+#define SONAR_ECHO_PIN    5
 #define LED_RIGHT_EYE_PIN	6
 #define LED_LEFT_EYE_PIN	7
 
@@ -78,6 +82,8 @@ const int mt_info[4][2] =
 #define EYE_RIGHT 0
 #define EYE_LEFT  1
 #define EYE_ALL   2
+
+UltraSonicDistanceSensor distanceSensor(SONAR_TRIGGER_PIN, SONAR_ECHO_PIN);  // Initialize sonar sensor
 
 void setup() {
   Serial.begin(9600);
@@ -237,8 +243,8 @@ void rb_wave_arm()
   //wave 3 times
   while(wave_cnt--)
   {
-    mt_rot_degrees_speed(MT_RIGHT_ARM,75,135,5);
-    mt_rot_degrees_speed(MT_RIGHT_ARM,135,75,5);
+    mt_rot_degrees_speed(MT_RIGHT_ARM,75,100,5);
+    mt_rot_degrees_speed(MT_RIGHT_ARM,100,75,5);
   }
 
   //arm down
@@ -251,7 +257,7 @@ void rb_happy()
 {
   int wave_cnt = 3;
   int start_degree = 60;
-  int stop_degree = 135;
+  int stop_degree = 110;
   int sum_degree = start_degree +  stop_degree;
 
   //wave 3 times
@@ -274,12 +280,26 @@ void rb_happy()
 
 }
 
+void rb_nod(int nodCnt)
+{
+  while(nodCnt--)
+  {
+    mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE,60,10);
+    //delay(750);
+    mt_rot_degrees_speed(MT_NECK_NOD,60,MT_NECK_NOD_INIT_ANGLE,10); 
+  }
+}
+
 //Read sonar sensor when rotate neck, look around
 //If detect something, say fun world, do arm gesture
-void rb_suveilance()
+enum sys_state_e
 {
+  S_INIT,
+  S_DETECTED_PEOPLE
+}_SYS_STATE_E;
 
-}
+sys_state_e gState = S_INIT;
+
 
 void led_test() {
   digitalWrite(LED_RIGHT_EYE_PIN, HIGH);  // turn the LED on (HIGH is the voltage level)
@@ -292,10 +312,33 @@ void led_test() {
   delay(500);                      // wait for a second
 }
 
+void distance_sensor_test()
+{
+  Serial.println(distanceSensor.measureDistanceCm());
+}
+
 void rb_self_test()
 {
   led_test();
   mt_self_test();
+  distance_sensor_test();
+}
+
+void rb_eye_wink(int eye_pos,int wink_cnt, int wink_delay)
+{ 
+  int led_pin = LED_LEFT_EYE_PIN;
+  if(eye_pos== EYE_RIGHT)
+  {
+    led_pin = LED_RIGHT_EYE_PIN;
+  }
+
+  while(wink_cnt--)
+  {
+    digitalWrite(led_pin, HIGH);
+    delay(200);
+    digitalWrite(led_pin, LOW);
+    delay(200);
+  }
 }
 
 void rb_eye_ctrl(int eye_pos,int eye_mode)
@@ -330,5 +373,37 @@ void loop() {
   //rb_happy();
 
   //Stop loop for testing
-  while(1);
+  //while(1);
+}
+
+void rb_suveilance()
+{
+  int measureDistance = distanceSensor.measureDistanceCm();
+  Serial.println(measureDistance); //debug
+
+  if (measureDistance > 0 && measureDistance < 30 && gState != S_DETECTED_PEOPLE)
+  {
+    gState = S_DETECTED_PEOPLE;
+  }
+
+  switch(gState)
+  {
+      case S_INIT:
+        break;
+      
+      case S_DETECTED_PEOPLE:
+        Serial.println("Hello human");
+        rb_eye_wink(EYE_LEFT,2,200);
+        rb_wave_arm();
+        rb_nod(1);
+
+        gState = S_INIT;
+
+        break;
+
+      default:
+        break;
+  }
+
+  delay(200);
 }
