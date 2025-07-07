@@ -54,12 +54,12 @@ uint8_t servonum = 0;
 
 #define MT_RIGHT_ARM_MAX_ANGLE    120     //max angle to keep safe
 #define MT_LEFT_ARM_MAX_ANGLE     120
-#define MT_NECK_ROT_MAX_ANGLE     180     //rotate a neck
+#define MT_NECK_ROT_MAX_ANGLE     135     //rotate a neck
 #define MT_NECK_NOD_MAX_ANGLE     150     //nod
 
 #define MT_RIGHT_ARM_MIN_ANGLE    MT_RIGHT_ARM_INIT_ANGLE
 #define MT_LEFT_ARM_MIN_ANGLE     MT_LEFT_ARM_INIT_ANGLE
-#define MT_NECK_ROT_MIN_ANGLE     0 
+#define MT_NECK_ROT_MIN_ANGLE     30 
 #define MT_NECK_NOD_MIN_ANGLE     MT_NECK_NOD_INIT_ANGLE
 
 void rb_init_position();
@@ -412,6 +412,8 @@ void rb_suveilance()
       case S_DETECTED_PEOPLE:
         Serial.println("Hello human");
         rb_eye_wink(EYE_LEFT,2,200);
+        //rb_say_hello
+        rb_eye_ctrl(EYE_LEFT,EYE_CTRL_ON); //back to last state
         rb_wave_arm();
         rb_nod(1);
         gState = S_SCANNING;
