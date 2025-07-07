@@ -47,10 +47,20 @@ uint8_t servonum = 0;
 #define MT_NECK_NOD   3     //nod
 
 //Init angle
-#define MT_RIGHT_ARM_INIT_ANGLE  45     //wave right arm
-#define MT_LEFT_ARM_INIT_ANGLE   45
-#define MT_NECK_ROT_INIT_ANGLE   90     //rotate a neck
-#define MT_NECK_NOD_INIT_ANGLE   90     //nod
+#define MT_RIGHT_ARM_INIT_ANGLE   45     //wave right arm
+#define MT_LEFT_ARM_INIT_ANGLE    45
+#define MT_NECK_ROT_INIT_ANGLE    90     //rotate a neck
+#define MT_NECK_NOD_INIT_ANGLE    90     //nod
+
+#define MT_RIGHT_ARM_MAX_ANGLE    120     //max angle to keep safe
+#define MT_LEFT_ARM_MAX_ANGLE     120
+#define MT_NECK_ROT_MAX_ANGLE     180     //rotate a neck
+#define MT_NECK_NOD_MAX_ANGLE     150     //nod
+
+#define MT_RIGHT_ARM_MIN_ANGLE    MT_RIGHT_ARM_INIT_ANGLE
+#define MT_LEFT_ARM_MIN_ANGLE     MT_LEFT_ARM_INIT_ANGLE
+#define MT_NECK_ROT_MIN_ANGLE     0 
+#define MT_NECK_NOD_MIN_ANGLE     MT_NECK_NOD_INIT_ANGLE
 
 void rb_init_position();
 void rb_ready_state();
@@ -177,6 +187,7 @@ void mt_init_position(int mtIdx)
   mt_rot_degrees(mtIdx, mt_info[mtIdx][1]);
 }
 
+
 //Robot init state
 void rb_init_position()
 {
@@ -295,7 +306,8 @@ void rb_nod(int nodCnt)
 enum sys_state_e
 {
   S_INIT,
-  S_DETECTED_PEOPLE
+  S_DETECTED_PEOPLE,
+  S_SCANNING
 }_SYS_STATE_E;
 
 sys_state_e gState = S_INIT;
@@ -376,10 +388,15 @@ void loop() {
   //while(1);
 }
 
+int gHeadRotAngle = MT_NECK_ROT_INIT_ANGLE;
+
 void rb_suveilance()
 {
+  static int headAngle = gHeadRotAngle; //get a current head rotation angle position
+  static bool  bScanDirect = true;
   int measureDistance = distanceSensor.measureDistanceCm();
   Serial.println(measureDistance); //debug
+
 
   if (measureDistance > 0 && measureDistance < 30 && gState != S_DETECTED_PEOPLE)
   {
@@ -389,6 +406,7 @@ void rb_suveilance()
   switch(gState)
   {
       case S_INIT:
+        gState = S_SCANNING;
         break;
       
       case S_DETECTED_PEOPLE:
@@ -396,14 +414,52 @@ void rb_suveilance()
         rb_eye_wink(EYE_LEFT,2,200);
         rb_wave_arm();
         rb_nod(1);
-
-        gState = S_INIT;
+        gState = S_SCANNING;
 
         break;
+      
+      // case S_CHECK_PEOPLE:
+      //   if (measureDistance > 0 && measureDistance < 30 && gState != S_DETECTED_PEOPLE)
+      //   {
+      //     gState = S_DETECTED_PEOPLE;
+      //   }
+      //   else
+      //   {
+      //     gState = S_SCANNING;
+      //   }
+      //   break;
 
+      case S_SCANNING:
+        measureDistance = distanceSensor.measureDistanceCm();
+        Serial.println(measureDistance); //debug
+
+        if (measureDistance > 0 && measureDistance < 30)
+        {
+          gState = S_DETECTED_PEOPLE;
+          break;
+        }
+
+        if(bScanDirect == true){
+          if(headAngle < MT_NECK_ROT_MAX_ANGLE)
+            mt_rot_degrees(MT_NECK_ROT,headAngle++);
+          else
+            bScanDirect = false; //revert rotation direction
+            //headAngle = MT_NECK_ROT_MIN_ANGLE; //reset
+        }else
+        {
+          if(headAngle > MT_NECK_ROT_MIN_ANGLE)
+            mt_rot_degrees(MT_NECK_ROT,headAngle--);
+          else
+            bScanDirect = true; //revert rotation direction
+        }
+
+        Serial.print("Head rot angle:"); //debug
+        Serial.println(headAngle);
+
+        break;
       default:
         break;
   }
 
-  delay(200);
+  delay(100);
 }
