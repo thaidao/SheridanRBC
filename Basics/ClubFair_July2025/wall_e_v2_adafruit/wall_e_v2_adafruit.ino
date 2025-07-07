@@ -21,6 +21,8 @@
 #include <Adafruit_PWMServoDriver.h>
 #include <HCSR04.h>    //library: https://github.com/Martinsos/arduino-lib-hc-sr04
 
+#include "DFRobotDFPlayerMini_proc.h"
+
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // you can also call it with a different address you want
@@ -126,6 +128,9 @@ void setup() {
   delay(10);
 
   rb_init_position();
+
+  //Setup MP3 player
+  setup_DFRobotDFPlayerMini();
 
   //Do self test
   rb_self_test();
@@ -331,9 +336,14 @@ void distance_sensor_test()
 
 void rb_self_test()
 {
+  //LED (robot eyes)
   led_test();
+  //All servos
   mt_self_test();
+  //Distance sensor
   distance_sensor_test();
+  //play mp3
+  DFPlayer_test();
 }
 
 void rb_eye_wink(int eye_pos,int wink_cnt, int wink_delay)
@@ -374,7 +384,7 @@ void rb_eye_ctrl(int eye_pos,int eye_mode)
 
 void loop() {
   //Stop robot temporally
-  //while(1);
+  while(1);
 
   rb_suveilance();
 
