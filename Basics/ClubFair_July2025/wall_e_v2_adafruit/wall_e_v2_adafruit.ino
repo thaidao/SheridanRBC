@@ -403,7 +403,7 @@ void loop() {
   // }
   //while(1);
 
-  rb_suveilance();
+  rb_surveillance();
 
   //Wave arm
   //rb_wave_arm();
@@ -418,7 +418,7 @@ void loop() {
 
 int gHeadRotAngle = MT_NECK_ROT_INIT_ANGLE;
 
-void rb_suveilance()
+void rb_surveillance()
 {
   static int headAngle = gHeadRotAngle; //get a current head rotation angle position
   static bool  bScanDirect = true;
