@@ -59,16 +59,23 @@ void setup()
     }
   }
   Serial.println(F("DFPlayer Mini online."));
+
+    myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
   
-  myDFPlayer.volume(20);  //Set volume value. From 0 to 30
-  myDFPlayer.play(1);  //Play the first mp3
+  myDFPlayer.volume(15);  //Set volume value. From 0 to 30
+  //myDFPlayer.play(6);  //Play the first mp3
+
+  //test_play_mp3();
 }
 
 void loop()
 {
   static unsigned long timer = millis();
+
+  //test_play_mp3();
+  //while(1);
   
-  if (millis() - timer > 10000) {
+  if (millis() - timer > 5000) {
     timer = millis();
     myDFPlayer.next();  //Play next mp3 every 3 second.
   }
@@ -76,6 +83,12 @@ void loop()
   if (myDFPlayer.available()) {
     printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
   }
+}
+
+void test_play_mp3()
+{
+  myDFPlayer.advertise(1);  //play specific mp3 in SD:/15/004.mp3; Folder Name(1~99); File Name(1~255)
+  //while(1);
 }
 
 void printDetail(uint8_t type, int value){

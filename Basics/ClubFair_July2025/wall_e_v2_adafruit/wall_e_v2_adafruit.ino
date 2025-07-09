@@ -49,8 +49,8 @@ uint8_t servonum = 0;
 #define MT_NECK_NOD   3     //nod
 
 //Init angle
-#define MT_RIGHT_ARM_INIT_ANGLE   45     //wave right arm
-#define MT_LEFT_ARM_INIT_ANGLE    45
+#define MT_RIGHT_ARM_INIT_ANGLE   0     //wave right arm
+#define MT_LEFT_ARM_INIT_ANGLE    0
 #define MT_NECK_ROT_INIT_ANGLE    90     //rotate a neck
 #define MT_NECK_NOD_INIT_ANGLE    90     //nod
 
@@ -61,8 +61,8 @@ uint8_t servonum = 0;
 
 #define MT_RIGHT_ARM_MIN_ANGLE    MT_RIGHT_ARM_INIT_ANGLE
 #define MT_LEFT_ARM_MIN_ANGLE     MT_LEFT_ARM_INIT_ANGLE
-#define MT_NECK_ROT_MIN_ANGLE     30 
-#define MT_NECK_NOD_MIN_ANGLE     MT_NECK_NOD_INIT_ANGLE
+#define MT_NECK_ROT_MIN_ANGLE     45 
+#define MT_NECK_NOD_MIN_ANGLE     60
 
 void rb_init_position();
 void rb_ready_state();
@@ -211,18 +211,26 @@ void rb_ready_state()
 //Run all motors
 void mt_self_test()
 {
+  int end_angle;
+  int start_angle;
   // mt_rot_degrees(MT_RIGHT_ARM,120);   //down from 180 to 120 due to hardware limitation
   // mt_rot_degrees(MT_LEFT_ARM,120);    //when the hands are moving over 150, it will be stucked by its head=>make motor broken
   // delay(1000);
   // mt_init_position(MT_RIGHT_ARM);
   // mt_init_position(MT_LEFT_ARM);
 
+  //while(1)
+  {
   //Test 2 arms up and down
-  mt_rot_degrees_speed(MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE,90,20);
-  mt_rot_degrees_speed(MT_RIGHT_ARM,90,MT_RIGHT_ARM_INIT_ANGLE,20);
+  end_angle = 90;
+  mt_rot_degrees_speed(MT_RIGHT_ARM,MT_RIGHT_ARM_INIT_ANGLE,end_angle,15);
+  mt_rot_degrees_speed(MT_RIGHT_ARM,end_angle,MT_RIGHT_ARM_INIT_ANGLE,15);
 
-  mt_rot_degrees_speed(MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE,90,20);
-  mt_rot_degrees_speed(MT_LEFT_ARM,90,MT_LEFT_ARM_INIT_ANGLE,20);
+  end_angle = 90;
+  mt_rot_degrees_speed(MT_LEFT_ARM,MT_LEFT_ARM_INIT_ANGLE,end_angle,15);
+  mt_rot_degrees_speed(MT_LEFT_ARM,end_angle,MT_LEFT_ARM_INIT_ANGLE,15);
+  }
+  //while(1);
 
   //mt_rot_degrees_speed(MT_LEFT_ARM,45,120,15);
   //mt_rot_degrees_speed(MT_LEFT_ARM,120,45,15);
@@ -230,20 +238,23 @@ void mt_self_test()
 
   //Rotate head to left and right
   //mt_rot_degrees(MT_NECK_ROT,0);
-  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,0,15);
+  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,MT_NECK_ROT_MIN_ANGLE,15);
   //delay(750);
-  mt_rot_degrees_speed(MT_NECK_ROT,0,180,10);
+  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_MIN_ANGLE,MT_NECK_ROT_MAX_ANGLE,15);
   //delay(750);
-  mt_rot_degrees_speed(MT_NECK_ROT,180,MT_NECK_ROT_INIT_ANGLE,15);
-  delay(750);
+  mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_MAX_ANGLE,MT_NECK_ROT_INIT_ANGLE,15);
+  //delay(750);
 
   int cnt = 1;
+  int angle1 = MT_NECK_NOD_INIT_ANGLE+30;
+  int angle2 = MT_NECK_NOD_INIT_ANGLE-30;
   //head down 
   while(cnt--){
-  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE,120,15);
+  mt_rot_degrees_speed(MT_NECK_NOD,MT_NECK_NOD_INIT_ANGLE,angle1,15); //init to max
   //delay(750);
-  mt_rot_degrees_speed(MT_NECK_NOD,120,MT_NECK_NOD_INIT_ANGLE,15);
+  mt_rot_degrees_speed(MT_NECK_NOD,angle1,angle2,15);  //max to min
   //delay(750);
+  mt_rot_degrees_speed(MT_NECK_NOD,angle2,MT_NECK_NOD_INIT_ANGLE,15); //min to init
   }
   //while(1);
 
@@ -286,9 +297,9 @@ void rb_happy()
       mt_rot_degrees(MT_LEFT_ARM, sum_degree - degrees);
 
       //@todo nod
-      delay(5);
+      delay(15);
     }
-    delay(10);
+    delay(20);
   }
  
   //Two hand down
@@ -344,6 +355,8 @@ void rb_self_test()
   distance_sensor_test();
   //play mp3
   DFPlayer_test();
+
+  delay(2000);
 }
 
 void rb_eye_wink(int eye_pos,int wink_cnt, int wink_delay)
@@ -384,12 +397,17 @@ void rb_eye_ctrl(int eye_pos,int eye_mode)
 
 void loop() {
   //Stop robot temporally
-  while(1);
+  // while(DFPlayer_isPlaying())
+  // {
+  //    rb_happy();  
+  // }
+  //while(1);
 
   rb_suveilance();
 
   //Wave arm
   //rb_wave_arm();
+
 
   //Show happy mode
   //rb_happy();

@@ -60,7 +60,7 @@ void setup_DFRobotDFPlayerMini()
   }
   Serial.println(F("DFPlayer Mini online."));
   
-  myDFPlayer.volume(20);  //Set volume value. From 0 to 30
+  myDFPlayer.volume(10);  //Set volume value. From 0 to 30
   //myDFPlayer.play(1);  //Play the first mp3
 }
 
@@ -78,6 +78,19 @@ void DFPlayer_testFull()
   }
 }
 
+int DFPlayer_isPlaying()
+{
+  //bool bRet = false;
+  if(!myDFPlayer.available())
+    return 0;
+
+  int16_t result = myDFPlayer.readState() ;
+  if (result != -1)
+		return (result & 1);
+
+	return 1;
+}
+
 void DFPlayer_test()
 {
   static unsigned long timer = millis();
@@ -85,15 +98,21 @@ void DFPlayer_test()
   Serial.println(F("Testing DFPlayer...")); //debug
 
   myDFPlayer.play(1);  //Play the first mp3
+  Serial.println(F("Done Testing DFPlayer...")); //debug
+  // while(1)
+  // {
+  //     if(mp3.isPlaying() == true)
+  //   blink();
+  // }
 
   // if (millis() - timer > 10000) {
   //   timer = millis();
   //   myDFPlayer.next();  //Play next mp3 every 3 second.
   // }
   
-  if (myDFPlayer.available()) {
-    printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
-  }
+  // if (myDFPlayer.available()) {
+  //   printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
+  // }
 }
 
 void printDetail(uint8_t type, int value){

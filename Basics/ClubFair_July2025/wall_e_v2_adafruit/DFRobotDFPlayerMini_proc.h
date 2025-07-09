@@ -35,7 +35,9 @@ DFPlayer - A Mini MP3 Player For Arduino
 // #endif
 
 //DFRobotDFPlayerMini myDFPlayer;
-void DFPlayer_test();
 void setup_DFRobotDFPlayerMini();
+void DFPlayer_test();
+int DFPlayer_isPlaying();
+
 
 #endif
