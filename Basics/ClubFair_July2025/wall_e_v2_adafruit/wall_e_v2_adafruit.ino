@@ -282,10 +282,16 @@ void rb_wave_arm()
 
 void rb_happy()
 {
-  int wave_cnt = 3;
+  int wave_cnt = 5;
   int start_degree = 60;
   int stop_degree = 110;
   int sum_degree = start_degree +  stop_degree;
+
+  int angle1 = MT_NECK_ROT_INIT_ANGLE+20;
+  int angle2 = MT_NECK_ROT_INIT_ANGLE-20;
+
+  //Start playing a song
+  DFPlayer_playSongs();
 
   //wave 3 times
   while(wave_cnt--)
@@ -297,13 +303,29 @@ void rb_happy()
       mt_rot_degrees(MT_LEFT_ARM, sum_degree - degrees);
 
       //@todo nod
-      delay(15);
+      delay(30);
     }
-    delay(20);
+
+    rb_eye_wink(EYE_LEFT,random(1,3),random(50,200));
+    rb_eye_wink(EYE_RIGHT,random(1,3),random(50,200));
+    //rb_eye_wink(EYE_RIGHT,1,200);
+
+
+    mt_rot_degrees_speed(MT_NECK_ROT,MT_NECK_ROT_INIT_ANGLE,angle1,10);
+    //delay(750);
+    mt_rot_degrees_speed(MT_NECK_ROT,angle1,angle2,10);
+    //delay(750);
+    mt_rot_degrees_speed(MT_NECK_ROT,angle2,MT_NECK_ROT_INIT_ANGLE,10);
+
+
+    delay(200);
   }
  
   //Two hand down
   rb_init_position();
+
+  //Stop playing music
+  DFPlayer_Stop();
 
 }
 
@@ -333,11 +355,14 @@ void led_test() {
   digitalWrite(LED_RIGHT_EYE_PIN, HIGH);  // turn the LED on (HIGH is the voltage level)
   delay(500); 
   digitalWrite(LED_RIGHT_EYE_PIN, LOW);   // turn the LED off by making the voltage LOW
+  delay(500);
+  digitalWrite(LED_RIGHT_EYE_PIN, HIGH);  // turn the LED on (HIGH is the voltage level)
   
   digitalWrite(LED_LEFT_EYE_PIN, HIGH);  // turn the LED on (HIGH is the voltage level)
   delay(500);                      // wait for a second
   digitalWrite(LED_LEFT_EYE_PIN, LOW);   // turn the LED off by making the voltage LOW 
   delay(500);                      // wait for a second
+  digitalWrite(LED_LEFT_EYE_PIN, HIGH);  // turn the LED on (HIGH is the voltage level)
 }
 
 void distance_sensor_test()
@@ -397,11 +422,11 @@ void rb_eye_ctrl(int eye_pos,int eye_mode)
 
 void loop() {
   //Stop robot temporally
-  // while(DFPlayer_isPlaying())
-  // {
-  //    rb_happy();  
-  // }
-  //while(1);
+  while(DFPlayer_isPlaying())
+  {
+     rb_happy();  
+  }
+  while(1);
 
   rb_surveillance();
 
@@ -414,6 +439,20 @@ void loop() {
 
   //Stop loop for testing
   //while(1);
+}
+
+void rb_say_something()
+{
+  static int cnt = 0;
+
+  if(cnt%5 == 0)
+    DFPlayer_playSongs();
+  else if(cnt%20 == 0)
+    DFPlayer_playWallE_Voices();
+  else
+    DFPlayer_playHello();
+ 
+  cnt ++;
 }
 
 void rb_say_hello()
@@ -430,6 +469,8 @@ void rb_surveillance()
   int measureDistance = distanceSensor.measureDistanceCm();
   Serial.println(measureDistance); //debug
 
+  //static int detected_cnt = 0;
+
 
   if (measureDistance > 0 && measureDistance < 30 && gState != S_DETECTED_PEOPLE)
   {
@@ -444,7 +485,8 @@ void rb_surveillance()
       
       case S_DETECTED_PEOPLE:
         Serial.println("Hello human");
-        rb_say_hello();
+        rb_say_something();
+        //rb_say_hello();
         rb_eye_wink(EYE_LEFT,2,200);
         rb_eye_ctrl(EYE_LEFT,EYE_CTRL_ON); //back to last state
         rb_wave_arm();

@@ -43,5 +43,7 @@ void DFPlayer_playHello();
 void DFPlayer_playSongs();
 void DFPlayer_playWallE_Voices();
 
+void DFPlayer_Stop();
+
 
 #endif

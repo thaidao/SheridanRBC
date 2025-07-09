@@ -91,6 +91,11 @@ int DFPlayer_isPlaying()
 	return 1;
 }
 
+void DFPlayer_Stop()
+{
+  myDFPlayer.stop();
+}
+
 void DFPlayer_playHello()
 {
   int voice_idx = random(6,16);
