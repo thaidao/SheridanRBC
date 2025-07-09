@@ -91,6 +91,27 @@ int DFPlayer_isPlaying()
 	return 1;
 }
 
+void DFPlayer_playHello()
+{
+  int voice_idx = random(6,16);
+  myDFPlayer.stop();
+  myDFPlayer.play(voice_idx);
+}
+
+void DFPlayer_playSongs()
+{
+  int voice_idx = random(3,5);
+  myDFPlayer.stop();
+  myDFPlayer.play(voice_idx);
+}
+
+void DFPlayer_playWallE_Voices()
+{
+  int voice_idx = random(1,2);
+  myDFPlayer.stop();
+  myDFPlayer.play(voice_idx);
+}
+
 void DFPlayer_test()
 {
   static unsigned long timer = millis();

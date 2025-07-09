@@ -39,5 +39,9 @@ void setup_DFRobotDFPlayerMini();
 void DFPlayer_test();
 int DFPlayer_isPlaying();
 
+void DFPlayer_playHello();
+void DFPlayer_playSongs();
+void DFPlayer_playWallE_Voices();
+
 
 #endif

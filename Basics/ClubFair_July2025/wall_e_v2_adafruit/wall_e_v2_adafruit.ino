@@ -416,6 +416,11 @@ void loop() {
   //while(1);
 }
 
+void rb_say_hello()
+{
+  DFPlayer_playHello();
+}
+
 int gHeadRotAngle = MT_NECK_ROT_INIT_ANGLE;
 
 void rb_surveillance()
@@ -439,8 +444,8 @@ void rb_surveillance()
       
       case S_DETECTED_PEOPLE:
         Serial.println("Hello human");
+        rb_say_hello();
         rb_eye_wink(EYE_LEFT,2,200);
-        //rb_say_hello
         rb_eye_ctrl(EYE_LEFT,EYE_CTRL_ON); //back to last state
         rb_wave_arm();
         rb_nod(1);
