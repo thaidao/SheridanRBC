@@ -263,19 +263,36 @@ void mt_self_test()
 }
 
 //Wave arm
-void rb_wave_arm()
+void rb_wave_arm(int mode)
 {
   int wave_cnt = 3;
 
   //wave 3 times
   while(wave_cnt--)
   {
-    mt_rot_degrees_speed(MT_RIGHT_ARM,75,100,5);
-    mt_rot_degrees_speed(MT_RIGHT_ARM,100,75,5);
+    switch (mode){
+    case MT_RIGHT_ARM:
+      mt_rot_degrees_speed(MT_RIGHT_ARM,75,100,5);
+      mt_rot_degrees_speed(MT_RIGHT_ARM,100,75,5);
+      break;
+    case MT_LEFT_ARM:
+      mt_rot_degrees_speed(MT_LEFT_ARM,75,100,5);
+      mt_rot_degrees_speed(MT_LEFT_ARM,100,75,5);
+      break;
+    default:
+      mt_rot_degrees_speed(MT_LEFT_ARM,75,100,5);
+      mt_rot_degrees_speed(MT_LEFT_ARM,100,75,5);
+
+      mt_rot_degrees_speed(MT_RIGHT_ARM,75,100,5);
+      mt_rot_degrees_speed(MT_RIGHT_ARM,100,75,5);
+
+      break;  
+    }
   }
 
   //arm down
   mt_rot_degrees_speed(MT_RIGHT_ARM,75,MT_RIGHT_ARM_INIT_ANGLE,5);
+    mt_rot_degrees_speed(MT_LEFT_ARM,75,MT_LEFT_ARM_INIT_ANGLE,5);
   //mt_init_position(MT_RIGHT_ARM);
   //delay(500);
 }
@@ -422,11 +439,11 @@ void rb_eye_ctrl(int eye_pos,int eye_mode)
 
 void loop() {
   //Stop robot temporally
-  while(DFPlayer_isPlaying())
-  {
-     rb_happy();  
-  }
-  while(1);
+  // while(DFPlayer_isPlaying())
+  // {
+  //    rb_happy();  
+  // }
+  //while(1);
 
   rb_surveillance();
 
@@ -447,7 +464,7 @@ void rb_say_something()
 
   if(cnt%5 == 0)
     DFPlayer_playSongs();
-  else if(cnt%20 == 0)
+  else if(cnt%6 == 0)
     DFPlayer_playWallE_Voices();
   else
     DFPlayer_playHello();
@@ -469,7 +486,7 @@ void rb_surveillance()
   int measureDistance = distanceSensor.measureDistanceCm();
   Serial.println(measureDistance); //debug
 
-  //static int detected_cnt = 0;
+  static int detected_cnt = 0;
 
 
   if (measureDistance > 0 && measureDistance < 30 && gState != S_DETECTED_PEOPLE)
@@ -484,13 +501,19 @@ void rb_surveillance()
         break;
       
       case S_DETECTED_PEOPLE:
+        detected_cnt ++;
         Serial.println("Hello human");
-        rb_say_something();
+        
+        if(detected_cnt%10 == 0) //if detected multiple of 10 times, show happy
+          rb_happy();
+        else
+          rb_say_something();
+        
         //rb_say_hello();
         rb_eye_wink(EYE_LEFT,2,200);
         rb_eye_ctrl(EYE_LEFT,EYE_CTRL_ON); //back to last state
-        rb_wave_arm();
-        rb_nod(1);
+        rb_wave_arm(random(0,2));
+        rb_nod(random(1,3));
         gState = S_SCANNING;
 
         break;
@@ -538,5 +561,5 @@ void rb_surveillance()
         break;
   }
 
-  delay(100);
+  delay(50);  //rotating speed
 }

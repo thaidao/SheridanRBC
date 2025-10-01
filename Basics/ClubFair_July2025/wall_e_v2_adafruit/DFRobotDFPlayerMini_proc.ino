@@ -60,7 +60,7 @@ void setup_DFRobotDFPlayerMini()
   }
   Serial.println(F("DFPlayer Mini online."));
   
-  myDFPlayer.volume(10);  //Set volume value. From 0 to 30
+  myDFPlayer.volume(30);  //Set volume value. From 0 to 30
   //myDFPlayer.play(1);  //Play the first mp3
 }
 
@@ -98,21 +98,23 @@ void DFPlayer_Stop()
 
 void DFPlayer_playHello()
 {
-  int voice_idx = random(6,16);
+  static int voice_idx = 11; //random(11,18); //depend on number of file in sd card
   myDFPlayer.stop();
-  myDFPlayer.play(voice_idx);
+  myDFPlayer.play(voice_idx++);
+  if(voice_idx >18) voice_idx =11;
 }
 
 void DFPlayer_playSongs()
 {
-  int voice_idx = random(3,5);
+  static int voice_idx = 4;//random(4,10); //depend on number of file in sd card
   myDFPlayer.stop();
-  myDFPlayer.play(voice_idx);
+  myDFPlayer.play(voice_idx++);
+  if(voice_idx >10) voice_idx =4;
 }
 
 void DFPlayer_playWallE_Voices()
 {
-  int voice_idx = random(1,2);
+  int voice_idx = random(1,3); //depend on number of file in sd card
   myDFPlayer.stop();
   myDFPlayer.play(voice_idx);
 }

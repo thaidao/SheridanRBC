@@ -45,7 +45,8 @@
 
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
-const int rs = 7, en = 8, d4 = 9, d5 = 10, d6 = 11, d7 = 12;
+//const int rs = 7, en = 8, d4 = 9, d5 = 10, d6 = 11, d7 = 12;
+const int rs = 0, en = 2, d4 = 4, d5 = 14, d6 = 12, d7 = 13; // for wemos d1 esp8266 + lcd robot shield d1
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 int sensorPin = A0;   // select the input pin for the potentiometer
